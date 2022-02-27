@@ -7,8 +7,8 @@
 
 ---
 
-## Subject
-### 상황
+# Subject
+## 상황
 - 실험은 간단하게 2가지 상황을 비교할 계획이다.
 
 - 첫 번째 상황은 단순하게 두 개의 서비스에 각각 HTTP 요청을 보내는 상황이고,
@@ -23,8 +23,8 @@
 
 ---
 
-## Experiment
-### 환경
+# Experiment
+## 환경
 - Service
     - 모두 Local 환경에서 동작
     - `source`
@@ -43,21 +43,25 @@
 - Test tool
     - nGrinder
 
-### 준비
+## 준비
 - [EC2에 Zookeeper, Kafka 설치 및 실행](../usage-install-ec2.md)
     ![image](https://user-images.githubusercontent.com/59307414/155881543-dd325967-2e17-4447-a7cb-36880588bdc7.png)
 
 - [source](./source/), [target](./target/) application 작성
 
-### 결과
-#### vusers : 10, run count : 5000
+## 결과
+### vusers : 10, run count : 5000
+<b>HTTP<b>
 ![image](https://user-images.githubusercontent.com/59307414/155887762-514c1d68-9097-479b-94e9-d2a180587ed9.png)
 
+<b>Kafka<b>
 ![image](https://user-images.githubusercontent.com/59307414/155887840-22bb132e-5ef6-4654-ae13-f05d282a3d23.png)
 
-#### vusers : 10, run count : 10000
+### vusers : 10, run count : 10000
+<b>HTTP<b>
 ![image](https://user-images.githubusercontent.com/59307414/155888124-37735557-5906-4e8a-9f4d-a3430f59593e.png)
 
+<b>Kafka<b>
 ![image](https://user-images.githubusercontent.com/59307414/155887973-051edd74-3616-441b-921e-9efd27bff475.png)
 
 ---
