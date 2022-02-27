@@ -2,7 +2,7 @@
 ## Overview
 - [지난 인턴십에서 진행했던 프로젝트](https://github.com/stove-smooth/sgs-smooth)에서 마이크로서비스 간 요청을 MQ를 이용하여 처리하지 못 했다.
 - 변명이라면 변명이지만 MSA 및 Spring Cloud에 대한 개념이 조금도 없는 상황에서 진행했던 프로젝트였고, 기본적인 구조 이해 및 설계에 정신이 없었다.
-- 추가적으로 WebRTC를 바탕으로 한 시그널링 서버+미디어 서버 구축 부분에 공부 및 구현을 신경쓰다보니 MQ를 공부하고 서비스간 요청에 대해 효율적으로 처리하기보다는 Feign Clinet를 이용한 단순하게 API 처리를 하게 되었다.
+- 추가적으로 WebRTC를 바탕으로 한 시그널링 서버+미디어 서버 구축 부분에 공부 및 구현을 신경쓰다보니 MQ를 공부하고 서비스간 요청에 대해 효율적으로 처리하기보다는 Feign Client를 이용한 단순하게 API 처리를 하게 되었다.
 - 당시 적용하지 못 했던 부분을 이번 실험을 통해 공부하고 적용해보면서 성능을 비교할 계획이다. 
 
 ---
@@ -45,6 +45,7 @@
 
 ## 준비
 - [EC2에 Zookeeper, Kafka 설치 및 실행](../usage-install-ec2.md)
+
     ![image](https://user-images.githubusercontent.com/59307414/155881543-dd325967-2e17-4447-a7cb-36880588bdc7.png)
 
 - [source](./source/), [target](./target/) application 작성
@@ -56,6 +57,8 @@
 
 <b>Kafka<b>
 ![image](https://user-images.githubusercontent.com/59307414/155887840-22bb132e-5ef6-4654-ae13-f05d282a3d23.png)
+
+---
 
 ### vusers : 10, run count : 10000
 <b>HTTP<b>
