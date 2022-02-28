@@ -58,6 +58,11 @@
 <b>Kafka<b>
 ![image](https://user-images.githubusercontent.com/59307414/155887840-22bb132e-5ef6-4654-ae13-f05d282a3d23.png)
 
+|구분|TPS|Peak TPS|Mean Test Time|Run Time|
+|---|---|---|---|---|
+|HTTP|539.3|753|13.65|00:01:38|
+|Kafka|1233.8|1905|4.78|00:00:47|
+
 ---
 
 ### vusers : 10, run count : 10000
@@ -66,6 +71,11 @@
 
 <b>Kafka<b>
 ![image](https://user-images.githubusercontent.com/59307414/155887973-051edd74-3616-441b-921e-9efd27bff475.png)
+
+|구분|TPS|Peak TPS|Mean Test Time|Run Time|
+|---|---|---|---|---|
+|HTTP|530.3|712|13.82|00:03:17|
+|Kakfa|1496.9|2086|4.45|00:01:13|
 
 ---
 
