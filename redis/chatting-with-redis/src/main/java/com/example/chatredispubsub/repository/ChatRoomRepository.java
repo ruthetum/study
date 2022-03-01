@@ -1,6 +1,6 @@
 package com.example.chatredispubsub.repository;
 
-import com.example.chatredispubsub.Service.RedisSubscriber;
+import com.example.chatredispubsub.service.RedisSubscriber;
 import com.example.chatredispubsub.entity.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;

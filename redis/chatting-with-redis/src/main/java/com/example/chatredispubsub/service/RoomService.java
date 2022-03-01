@@ -1,4 +1,4 @@
-package com.example.chatredispubsub.Service;
+package com.example.chatredispubsub.service;
 
 import com.example.chatredispubsub.dto.RoomDtoResponse;
 import com.example.chatredispubsub.entity.Room;

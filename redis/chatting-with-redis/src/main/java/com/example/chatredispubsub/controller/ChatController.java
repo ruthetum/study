@@ -1,12 +1,11 @@
 package com.example.chatredispubsub.controller;
 
-import com.example.chatredispubsub.Service.RedisPublisher;
+import com.example.chatredispubsub.service.RedisPublisher;
 import com.example.chatredispubsub.dto.MessageDto;
 import com.example.chatredispubsub.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Slf4j

@@ -1,6 +1,6 @@
 package com.example.chatredispubsub.controller;
 
-import com.example.chatredispubsub.Service.RoomService;
+import com.example.chatredispubsub.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
