@@ -16,8 +16,8 @@
 ---
 
 ## 준비
-- [Spring MVC 기반 소스 코드]
-- [Spring WebFlux 기반 소스 코드] + Redis Reactive
+- [Spring MVC 기반 소스 코드](./mvc/)
+- [Spring WebFlux 기반 소스 코드](./webflux/) + Redis Reactive
 
 ## 실험
 > Vusers: 10, Run Count: 10000
