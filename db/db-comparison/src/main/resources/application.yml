@@ -1,0 +1,23 @@
+server:
+  port: 8888
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  application:
+    name: db-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db-test?serverTimezone=Asia/Seoul
+    username: heedong
+    password: 1q2w3e4r!@
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  redis:
+    host: localhost
+    port: 6379
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/db-test
