@@ -281,6 +281,357 @@ public static void main(String[] args) throws Exception {
     - 이벤트 루프들이 이벤트 큐를 공유하는 경우 발생 순서와 처리 순서의 불일치가 발생
     - 네티는 이벤트 큐를 이벤트 루프 스레드의 내부에 둠으로써 원인을 제거
 
+### 네티 비동기 I/O 처리
+- 네티는 비동기 호출을 위한 두 가지 패턴을 제공
+    - 1. 리액터 패턴의 구현체인 이벤트 핸들러
+    - 2. 퓨처(Future) 패턴
+- 퓨처 패턴은 미래에 완료될 작업을 등록하고, 처리 결과를 확인하는 객체를 통해서 작업의 완료를 확인
+- 퓨처 패턴은 메서드를 호출하는 즉시 퓨처 객체를 돌려준다.
+> Ex. 빵집에 빵을 예약하고 정해진 시간에 받으러 가는 경우
+> 1. 빵집에서 빵을 주문하고 계산을 하면, 빵의 주문서를 받는다.
+> 2. 빵이 완성되고 정해진 시간에 빵집을 찾아가면 주문서와 빵을 교환한다.
+
+```java
+public class SpecialCake {
+    public static void main(String[] args) {
+        Bakery bakery = new Bakery();
+
+        // 빵을 주문하고 주문서를 받는다.
+        Future future = bakery.orderCake();
+
+        // 다른 일을 하다가
+        doSomething();
+
+        // 빵이 완성되었는지 확인한다.
+        if (future.isDone()) {
+            Cake cake = future.getCake();
+        } else {
+            while(future.isDone() != true) {
+                // 다른 일을 한다.
+                doSomething();
+            }
+            Cake cake = future.getCake();
+        }
+    }
+}
+```
+
+#### Netty에서 퓨처 패턴
+```java
+public class EchoServer {
+    public static void main(String[] args) throws Exception {
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) {
+                            ChannelPipeline p = ch.pipeline();
+                            p.addLast(new EchoServerHandler());
+                        }
+                    });
+
+            ChannelFuture future = b.bind(8888).sync();     // ①
+            future.channel().closeFuture().sync();          // ②
+        }
+        finally {
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+        }
+    }
+}
+```
+- ①
+    - 8888번 포트를 사용하도록 바인드하는 비동기 bind 메서드를 호출
+    - bind 메서드는 포트 바인딩이 완료되기 전에 ChannelFuture 객체를 반환
+    - sync 메서드는 주어진 ChannelFuture 객체의 작업이 완료될 때까지 블로킹
+    - 따라서 bind 메서드의 처리가 완료될 때 sync 메서드도 같이 완료
+- ②
+    - future 객체를 통해서 채널을 얻어 오고,
+    - 바인드가 완료된 서버 채널의 CloseFuture 객체를 반환
+    - CloseFuture 객체는 채널의 연결이 종료될 때 연결 종료를 이벤트를 받음
+
+---
+
+## ch6. 바이트 버퍼
+- 자바 바이트 버퍼 vs 네티 바이트 버퍼
+
+### 자바 NIO 바이트 버퍼
+- ByteBuffer, CharBuffer, IntBuffer, ShortBuffer, ...
+- 바이트 버퍼 클래스는 내부의 배열 상태를 관리하는 세 가지 속성을 가지고 있음
+
+#### 바이트 버퍼 클래스의 속성 세 가지
+1. `capacity`
+- 버퍼에 저장할 수 있는 데이터의 최대 크기로 한 번 정하면 변경이 불가능
+- 버퍼를 생성할 때 생성자의 인수로 인력한 값
+
+2. `position`
+- 읽기 또는 쓰기가 작업 중인 위치, 버퍼 객체가 생성될 때 0으로 초기화
+- 데이터 입력(put 메서드)이나 데이터 조회(get 메서드) 호출 시 자동으로 증가
+
+3. `limit`
+- 읽고 쓸 수 있는 버퍼 공간의 최대치
+- limit 메서드로 값을 조절할 수 있으나 capacity 값보다 크게 설정할 수 없음
+
+#### 자바 바이트 버퍼 생성 메서드 세 가지
+1. `allocate` : 힙 버퍼 생성
+- JVM 힙 영역에 바이트 버퍼를 생성
+- 메서드의 인수는 생성할 바이트 버퍼의 크기이며 capacity의 값으로 설정
+- 생성되는 바이트 버퍼의 값은 모두 0으로 초기화
+
+2. `allocateDirect` : 다이렉트 버퍼 생성
+- JVM 힙 영역이 아닌 운영체제의 커널 영역에 바이트 버퍼를 생성
+- allocateDirect 메서드는 ByteBuffer 추상 클래스만 사용 가능 -> 다이렉트 버퍼는 ByteBuffer로만 생성 가능
+- 메서드 인수는 allocate와 마찬가지로 생성할 바이트 버퍼의 크기이며 capacity의 값으로 설정
+- 생성되는 바이트 버퍼의 값은 모두 0으로 초기화
+
+3. `wrap`
+- 입력된 바이트 배열을 사용해서 바이트 버퍼를 생성
+- 입력에 사용된 바이트 배열이 변경되면 wrap 메서드를 사용해서 생성한 바이트 버퍼의 내용도 변경
+
+#### 자바 바이트 버퍼 사용법
+```java
+public void ByteBufferFuction1() {
+    ByteBuffer buffer = ByteBuffer.allocate(11);
+
+    buffer.put((byte) 1);
+    buffer.put((byte) 2);
+    buffer.put((byte) 3);
+
+
+    // put 메서드를 사용하면서 position이 증가(+1)돼서 3이 출력되지 않음
+    System.out.println(buffer.get());       // 0
+    System.out.println(buffer.position())   // 4
+    
+    // rewind 메서드를 통해 position을 0으로 변경해줘야 됨
+    buffer.rewind();
+    System.out.println(buffer.get()); // 1
+}
+```
+- get, put 메서드 모두 호출하게 되면 postion이 증가
+- rewind 메서드를 사용하면 position을 0으로 변경
+
+```java
+public void ByteBufferFuction2() {
+    byte[] temp = {1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0};
+
+    // wrap 메서드로 버퍼 생성
+    ByteBuffer buffer = ByteBuffer.wrap(temp);
+
+    System.out.println(buffer.position());   // 0
+    System.out.println(buffer.limit());      // 11
+
+    System.out.println(buffer.get());        // 1
+    System.out.println(buffer.get());        // 2
+    System.out.println(buffer.get());        // 3
+    System.out.println(buffer.position());   // 현재 position : 3
+
+    buffer.flip();
+    System.out.println(buffer.position());   // 0
+    // flip 메서드로 인해 limit이 flip 메서드 직전의 position 값으로 변경
+    System.out.println(buffer.limit());      // 3
+}
+```
+- flip 메서드는 get, put 메서드가 호출된 이후의 position 정보를 저장
+
+
+#### 자바 바이트 버퍼 정리
+- 자바 바이트 버퍼는 사용할 때 읽기와 쓰기를 분리해서 생각해야 되고, 멀티 스레드 환경에서 바이트 버퍼를 공유하지 않아야 됨
+- 네티는 이런 자바 바이트 버퍼의 문제를 해결하기 위해 읽기를 위한 인덱스와 쓰기를 위한 인덱스를 구분해서 제공
+
+### 네티 바이트 버퍼
+- 읽기 인덱스와 쓰기 인덱스 구분
+- flip 메서드없이 읽기/쓰기 가능
+- 가변 바이트 버퍼
+- 바이트 버퍼 풀
+- 복합 버퍼
+- 자바 바이트 버퍼와 네티 바이트 버퍼 상호 변환
+
+#### 네티 바이트 버퍼 생성 방법
+- 네티 바이트 버퍼는 자바 바이트 버퍼와 달리 프레임워크 레벨의 바이트 버퍼 풀을 제공
+- 이 바이트 버퍼 풀을 이용해서 바이트 버퍼를 재사용
+- 네티 바이트 버퍼를 생성할 때는 두 가지를 선택해야 됨
+    - 풀링 여부
+    - 다이렉트 버퍼 여부
+
+#### 네티 바이트 버퍼의 종류와 생성 방법 네 가지
+|버퍼 종류|풀링 사용|풀링 사용 X|
+|:---:|:---:|:---:|
+|힙 버퍼|`PooledHeapByteBuf`|`UnpooledHeapByteBuf`|
+|다이렉트 버퍼|`PooledDirectByteBuf`|`UnpooledDirectByteBuf`|
+
+|버퍼 생성 방법|풀링 사용|풀링 사용 X|
+|:---:|:---:|:---:|
+|힙 버퍼|`ByteBufAllocator.DEFAULT.heapBuffer()`|`Unpooled.buffer()`|
+|다이렉트 버퍼|`ByteBufAllocator.DEFAULT.directBuffer()`|`Unpooled.directBuffer()`|
+- 풀링을 사용하는 힙, 다이렉트 버퍼의 경우 `ByteBufAllocator` 하위 추상 구현체인 `PooledBufAllocator` 클래스로 생성
+
+### 네티 바이트 버퍼 사용법
+#### 읽기/쓰기
+
+```java
+public void NettyByteBufferFuction1() {
+    // 네티 바이트 버퍼 생성 방법 4가지
+    // 풀링 O, 힙 버퍼
+    ByteBuf pooledHeapByteBuf = PooledBufAllocator.DEFAULT.heapBuffer(11);
+    // 풀링 O, 다이렉트 버퍼
+    ByteBuf pooledDirectByteBuf = PooledBufAllocator.DEFAULT.heapBuffer(11);
+    // 풀링 X, 힙 버퍼
+    ByteBuf unpooledHeapByteBuf = Unpooled.buffer(11);
+    // 풀링 X, 다이렉트 버퍼
+    ByteBuf unpooledDirectByteBuf = Unpooled.directBuffer(11);
+
+
+    ByteBuf buf = PooledBufAllocator.DEFAULT.heapBuffer(11);
+
+    // 정수 65537 작성 -> 4바이트 작성
+    buf.writeInt(65537);
+
+    // 읽어들일 수 있는 바이트 : 4
+    System.out.println(buf.readableBytes());    // 4
+    // 기록할 수 있는 바이트 : 7
+    System.out.println(buf.writableBytes());    // 7 
+
+    // 2 바이트 읽기 : 1
+    // 65537 = 0x10001 -> 4바이트 패딩 : 0x00010001
+    System.out.println(buf.readShort());        // 1
+
+    // 읽어들일 수 있는 바이트는 4바이트에서 2바이트를 읽어서 2
+    System.out.println(buf.readableBytes());    // 2
+    // 기록할 수 있는 바이트는 그대로 7
+    System.out.println(buf.writableBytes());    // 7
+
+    // 남은 데이터 있는지 확인 : 2바이트 남음
+    System.out.println(buf.isReadable());       // true
+
+    // 버퍼 초기화
+    buf.clear();
+
+    // 읽어들일 수 있는 바이트 : 0
+    System.out.println(buf.readableBytes());    // 0
+    // 기록할 수 있는 바이트 : 11
+    System.out.println(buf.writableBytes());    // 11 
+}
+```
+
+#### 가변 크기 버퍼
+- 자바 바이트 버퍼는 버퍼를 생성할 때 크기를 지정해야 하고, 한 번 생성된 바이트 버퍼의 크기를 변경할 수 없음
+- 네티 바이트 버퍼는 생성된 바이트 버퍼의 크기를 동적으로 변경할 수 있음
+
+```java
+public void NettyByteBufferFuction2() {
+    ByteBuf buf = PooledBufAllocator.DEFAULT.heapBuffer(11);
+
+    String source = "hello world";
+
+    // 버퍼에 11바이트 저장
+    buf.writeBytes(source.getBytes());
+    
+    // 읽어들일 수 있는 바이트 : 11
+    System.out.println(buf.readableBytes());    // 11
+    // 기록할 수 있는 바이트 : 0
+    System.out.println(buf.writableBytes());    // 0 
+
+    // 버퍼에 저장된 문자열 확인
+    System.out.println(buf.toString(Charset.defaultCharset())); // "hello world"
+
+
+    // 버퍼 크기 감소
+    buf.capacity(6);
+    // 버퍼에 저장된 문자열 확인, capacity가 변경되면서 문자열이 잘려짐
+    System.out.println(buf.toString(Charset.defaultCharset())); // "hello "
+
+    // 버퍼 크기 증가
+    buf.capacity(13);
+    // 버퍼에 추가 저장
+    buf.writeBytes("world".getBytes());
+    // 버퍼에 저장된 문자열 확인, capacity가 변경되면서 추가 저장 가능
+    System.out.println(buf.toString(Charset.defaultCharset())); // "hello world"
+
+    // capacity 확인 : 13
+    System.out.println(buf.capacity());    // 13
+    // 읽어들일 수 있는 바이트 : 11
+    System.out.println(buf.readableBytes());    // 11
+    // 기록할 수 있는 바이트 : 2
+    System.out.println(buf.writableBytes());    // 2 
+}
+```
+
+#### 바이트 버퍼 풀링
+- 바이트 버퍼 풀을 사용하면 버퍼를 할당하고 해제할 때 일어나는 가비지 컬렉션의 횟수를 감소할 수 있음
+
+#### 바이트 버퍼 상호 변환
+```java
+public void NettyByteBufferFuction3() {
+    String source = "hello world";
+
+    ByteBuf buf = Unpooled.buffer(11);
+    buf.writeBytes(source.getBytes());
+
+    // 네티 바이트 버퍼를 자바 NIO 버퍼로 변환
+    ByteBuffer nioByteBuffer = buf.nioBuffer();
+    // 출력 확인
+    System.out.println(new String(
+        nioByteBuffer.array(),
+        nioByteBuffer.arrayOffset(),
+        nioByteBuffer.remaining()));        // "hello world"
+
+
+    // 자바 NIO 버퍼를 네티 바이트 버퍼로 변환
+    ByteBuffer byteBuffer = ByteBuffer.wrap(source.getBytes());
+    ByteBuf nettyBuffer = Unpooled.wrappedBuffer(byteBuffer);
+    // 출력 확인
+    System.out.println(nettyBuffer.toString(Charset.defaultCharset())); // "hello world"
+}
+```
+
+#### 채널과 바이트 버퍼 풀
+- channelRead 메서드의 인수로 사용되는 바이트 버퍼는 네티 바이트 버퍼
+- channelRead 메서드가 실행된 이후의 네티 바이트 버퍼는 바이트 버퍼 풀로 돌아감
+
+```java
+public class EchoServerHandler extends ChannelInboundHandlerAdapter {
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        
+        ByteBuf readMessage = (ByteBuf) msg;
+        System.out.println(readMessage.toString(Charset.defaultCharset()));
+
+        // ChannelHandlerContext를 통해서 네티 프레임워크에 초기화된 ByteBufAllocator 참조
+        // ByteBufAllocator는 바이트 버퍼 풀을 관리하는 인터페이스
+        // (설정에 따라 힙 또는 다이렉트 버퍼 풀 생성, 기본적으로 다이렉트 버퍼 풀 생성)
+        ByteBufAllocator byteBufAllocator = ctx.alloc();
+
+        // ByteBufAllocator의 buffer 메서드를 사용하여 생성된 바이트 버퍼는 ByteBufAllocator의 풀에서 관리
+        // (release 메서드를 호출하면 버퍼 풀로 돌아감)
+        ByteBuf newBuffer = byteBufAllocator.buffer();
+
+
+        // newBuffer 사용
+
+
+        // write 메서드의 인수로 버퍼가 입력되면 데이터를 채널에 기록하고 버퍼 풀로 돌아감
+        ctx.write(msg);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
+    }
+}
+```
+
+### 정리
+- 네티로 애플리케이션을 작성할 때 반드시 네티 바이트 버퍼를 사용해야 하는 것은 아님
+- 하지만 더 나은 성능을 제공하기 위해 네티 바이트 버퍼를 사용하는 것이 이득
+- 자바 바이트 버퍼를 사용할 경우 반드시 호출해야 하는 flip 메서드를 호출하지 않아도 되기 때문에 애플리케이션 버그 발생률을 많이 낮출 수 있음
+- 네티 바이트 버퍼 풀을 사용하여 가비지 컬렉션 빈도를 낮추며 더 빠르고 안정적인 애플리케이션을 개발할 수 있음
+
 ---
 
 ## Reference
