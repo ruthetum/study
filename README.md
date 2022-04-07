@@ -4,12 +4,22 @@
 - 기억할 내용은 [보관](https://github.com/ruthetum/study/wiki)하기
 
 ## 💾 Theory
+### Kafka
 - [Kafka 개념 및 구조](./kafka/kafka-theory-architecture.md)
 - [이벤트 브로커 vs 메시지 브로커](./kafka/messaging-platform.md)
+
+### Netty
 - [Netty - 자바 네트워크 소녀 Netty 정리](./netty/java-network-girl-netty)
+
+### Redis
 - [Redis 야무지게 쓰기](./redis)
+
+### Java
 - [Effective Java 정리](./effective-java)
     - [Effective Java 스터디](https://github.com/Effective-Java-Camp/effective-java-3rd)
+
+### DB
+- [MySQL IN 절 안에 있는 순서대로 정렬하기](./db/query/mysql_in_%EC%A0%88_%EC%95%88%EC%97%90_%EC%9E%88%EB%8A%94_%EC%88%9C%EC%84%9C%EB%8C%80%EB%A1%9C_%EC%A0%95%EB%A0%AC%ED%95%98%EA%B8%B0.md)
 
 ## 🔬 Experiment
 - [Spring으로 이것저것](https://github.com/ruthetum/my-spring)

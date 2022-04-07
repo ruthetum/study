@@ -1,6 +1,10 @@
 # [자바 네트워크 소녀 Netty](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9788968482243&orderClick=LAG&Kc=)
 
 ## ch1. 네티 맛보기
+<details>
+<summary>더보기</summary>
+<div markdown="1">
+
 - [기본 에코 서버 만들기](./netty-example/src/main/java/ch1/echo/)
     - 텔넷 접속으로 `putty` 활용 (connection type : `Raw`)
 
@@ -9,9 +13,16 @@
 
         ![image](https://user-images.githubusercontent.com/59307414/156346568-3286825f-b641-4624-8937-1e4924ed6f6a.png)
 
+</div>
+</details>
+
 ---
 
 ## ch2. 네티의 주요 특징
+
+<details>
+<summary>더보기</summary>
+<div markdown="1">
 
 > 네티는 <b>비동기 이벤트 기반</b> 네트워크 애플리케이션 프레임워크로써 유지보수를 고려한 고성능 <b>프로토콜 서버</b>와 클라이언트를 <b>빠르게 개발할 수 있다.
 
@@ -23,9 +34,17 @@
 - 이벤트를 먼저 정의해두고 발생한 이벤트에 따라서 코드가 실행되도록 프로그램을 작성
 - ex. Non-Blocking Socket의 `Selector`를 사용한 I/O 이벤트 감지
 
+</div>
+</details>
+
 ---
 
 ## ch3. 부트스트랩
+
+<details>
+<summary>더보기</summary>
+<div markdown="1">
+
 - Bootstrap은 네트워크 애플리케이션의 동작 방식에 대한 설정을 담당
     - `Bootstrap` : 클라이언트 애플리케이션 담당
     - `ServerBootstrap` : 서버 애플리케이션 담당
@@ -97,9 +116,17 @@ public B group(EventLoopGroup group) {
 ### childHandler - 소켓 채널의 데이터 가공 핸들러 설정
 - 클라이언트 소켓 채널로 송수신되는 데이터를 가공하는 데이터 핸들러 설정 API
 
+</div>
+</details>
+
 ---
 
 ## ch4. 채널 파이프라인과 코텍
+
+<details>
+<summary>더보기</summary>
+<div markdown="1">
+
 - `채널 파이프라인` : 채널에서 발생한 이벤트가 이동하는 통로
 - 이 통로를 통해서 이동하는 이벤트를 처리하는 클래스가 `이벤트 핸들러`
 - 이 이벤트 핸들러를 상속받아서 구현한 구현체들이 `코덱`
@@ -224,9 +251,17 @@ public static void main(String[] args) throws Exception {
 - `ChannelOutboundHandler` : 인코더 역할
 - `ChannelInboundHandler` : 디코더 역할
 
+</div>
+</details>
+
 ---
 
 ## ch5. 이벤트 모델
+
+<details>
+<summary>더보기</summary>
+<div markdown="1">
+
 - 이벤트 루프 기반 프레임워크
     - JS : Node.js, ...
     - Java : Vert.x, Netty, ...
@@ -354,9 +389,17 @@ public class EchoServer {
     - 바인드가 완료된 서버 채널의 CloseFuture 객체를 반환
     - CloseFuture 객체는 채널의 연결이 종료될 때 연결 종료를 이벤트를 받음
 
+</div>
+</details>
+
 ---
 
 ## ch6. 바이트 버퍼
+
+<details>
+<summary>더보기</summary>
+<div markdown="1">
+
 - 자바 바이트 버퍼 vs 네티 바이트 버퍼
 
 ### 자바 NIO 바이트 버퍼
@@ -631,6 +674,9 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 - 하지만 더 나은 성능을 제공하기 위해 네티 바이트 버퍼를 사용하는 것이 이득
 - 자바 바이트 버퍼를 사용할 경우 반드시 호출해야 하는 flip 메서드를 호출하지 않아도 되기 때문에 애플리케이션 버그 발생률을 많이 낮출 수 있음
 - 네티 바이트 버퍼 풀을 사용하여 가비지 컬렉션 빈도를 낮추며 더 빠르고 안정적인 애플리케이션을 개발할 수 있음
+
+</div>
+</details>
 
 ---
 
