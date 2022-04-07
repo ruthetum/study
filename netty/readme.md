@@ -17,3 +17,14 @@
 - https://netty.io/
 - https://github.com/netty/netty
 - [자바 네트워크 소녀 Netty](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9788968482243&orderClick=LAG&Kc=)
+- SpringBoot + Netty TCP 소켓 서버 : https://i-hope9.github.io/2020/12/14/SpringBoot-Netty-2-SocketServer.html
+- 
+
+---
+
+### Spring
+- WebFlux Docs : https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux
+    - WebFlux Default Decoder `DecoderHttpMessageReader` : https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/codec/DecoderHttpMessageReader.html
+- Reactor Netty Configuration : https://www.baeldung.com/spring-boot-reactor-netty
+- Concurrency in Spring WebFlux : https://www.baeldung.com/spring-webflux-concurrency
+- How to build TCP server with SpringBoot : https://programmer.help/blogs/spring-boot-build-tcp-server.html
