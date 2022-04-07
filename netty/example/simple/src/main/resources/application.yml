@@ -1,0 +1,10 @@
+server:
+  host: localhost
+  port: 8080
+  netty:
+    boss:
+      thread:
+        count: 1
+    worker:
+      thread:
+        count: 10
