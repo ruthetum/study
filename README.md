@@ -23,7 +23,13 @@
 
 ## 🔬 Experiment
 - [Spring으로 이것저것](https://github.com/ruthetum/my-spring)
+
 - [DB 성능 비교 테스트 - MySQL vs MongoDB vs Redis](./db/db-comparison)
+
 - [HTTP vs MQ - Kafka 활용](./kafka/http-vs-mq)
+
+- [MSA에서 모든 비즈니스 규칙들을 실시간으로 일관성을 맞춰줘야 할까? (비동기 통신 + SAGA 패턴 적용해보기))](./kafka/asynchronous%2Bsaga/)
+
 - [Spring MVC vs WebFlux](./reactive/mvc%20vs%20webflux)
+
 - [다중 채팅 서버 만들기 with Redis](./redis/chatting-with-redis) 

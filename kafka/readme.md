@@ -11,3 +11,4 @@
 
 ## Kafka 실험
 - [HTTP vs Kafka로 MQ 성능 확인하기](./http-vs-mq/)
+- [MSA에서 모든 비즈니스 규칙들을 실시간으로 일관성을 맞춰줘야 할까? (비동기 통신 + SAGA 패턴 적용해보기))](./asynchronous%2Bsaga/)
