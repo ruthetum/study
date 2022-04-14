@@ -28,7 +28,7 @@
 
 - [HTTP vs MQ - Kafka 활용](./kafka/http-vs-mq)
 
-- [MSA에서 모든 비즈니스 규칙들을 실시간으로 일관성을 맞춰줘야 할까? (비동기 통신 + SAGA 패턴 적용해보기))](./kafka/asynchronous%2Bsaga/)
+- [MSA에서 모든 비즈니스 규칙들을 실시간으로 일관성을 맞춰줘야 할까? (비동기 통신 + SAGA 패턴 적용해보기)](./kafka/asynchronous%2Bsaga/)
 
 - [Spring MVC vs WebFlux](./reactive/mvc%20vs%20webflux)
 

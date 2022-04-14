@@ -40,23 +40,31 @@
 - 모든 서비스를 MVC 기반, RDBMS에 내역을 저장하고, 위 과정을 순차적으로 진행한다.
 
 ### case 2. MVC + 비동기 통신
-![image](https://user-images.githubusercontent.com/59307414/163176390-a1451b2d-71b9-4596-b007-1a288679a2be.png)
+![case2](https://user-images.githubusercontent.com/59307414/163399043-78ca2437-8fd5-4972-9a3a-1783dde28eea.png)
 
 - 모든 서비스를 MVC 기반, RDBMS에 내역을 저정하지만 서비스 사이에 메시지 브로커(Kafka)를 두어 동기 통신이 아닌 **서비스간 비동기 통신**을 진행한다.
 
 ### case 3. MVC + WebFlux(알림) + 비동기 통신
-![image](https://user-images.githubusercontent.com/59307414/163178274-8a9dbf2c-f29b-431c-8e32-eb2198ef96dd.png)
+![case3](https://user-images.githubusercontent.com/59307414/163398911-8bea047a-abe1-470f-a826-7b08a489dc20.png)
 
 - `case 2`와 기본적인 구조는 비슷하다.
 
-- 하지만 메일 서비스를 고려해봤을 때 임으로 만든 결제 서비스 외에도 다른 서비스에서 요청을 받을 수 있다.
+- 하지만 메일 서비스를 실제 상황에서 고려해봤을 때 결제 서비스 외에도 다른 서비스에서 많은 요청을 받을 수 있다.
 
-- 순간적인 요청이 많이 들어왔을 때 지연이 적어야 하기 때문에 적은 리소스에서 효율적으로 운영할 수 있는 non blocking 방식의 **WebFlux**가 효율적일 것 같다고 생각했다.
+- 순간적인 요청이 많이 들어왔을 때 지연이 적어야 하기 때문에 MVC보다는 적은 리소스에서 효율적으로 운영할 수 있는 non blocking 방식의 **WebFlux**가 효율적일 것 같다고 생각했다.
 
-- 추가로 메일 전송 내역은 데이터의 사용을 고려해봤을 전송 이력은 조회할 뿐 수정 기능이나 트랜잭션 처리에 대해 크게 깊이를 두지 않기 때문에 Mongo DB를 활용하면 보다 효율적일 것이라고 생각했고, 단순히 `Spring Data MongoDB`를 활용하는 것이 아니라 WebFlux의 비동기성을 좀 더 효율적으로 활용하기 위한 옵션으로 `Spring Data MongoDB Reactive`을 활용하고자 했다.
+- 추가로 메일 전송 내역은 데이터의 사용을 고려해봤을 전송 이력은 조회할 뿐 수정 기능이나 트랜잭션 처리에 대해 크게 깊이를 두지 않기 때문에 Mongo DB를 활용하면 보다 효율적일 것이라고 생각했기 때문에 데이터베이스 수정을 계획했고,
+
+- 단순히 `Spring Data MongoDB`를 활용하는 것이 아니라 WebFlux의 비동기성을 좀 더 효율적으로 활용하기 위해 `Spring Data MongoDB Reactive`을 활용하고자 했다.
 
 ### case 4. WebFlux + R2DBC + 비동기 통신
 
-![image](https://user-images.githubusercontent.com/59307414/163181836-a96df663-13ad-41f8-9992-6e341da8e060.png)
+![case4](https://user-images.githubusercontent.com/59307414/163398652-c5e9b52a-c3fc-4163-bf51-9bf8c148a563.png)
 
-- 모든 서비스를 WebFlux 기반으로 만들고, RDBMS에 기존 드라이버를 활용하는 경우 Blocking 이슈때문에 효율이 떨어질 수 있기 때문에 **Spring Data R2DBC**와 같은 리액티브 API를 활용해서 데이터를 저장할 예정이다.    
+- 모든 서비스를 WebFlux 기반으로 만들고, RDBMS에 기존 드라이버를 활용하는 경우 Blocking 이슈때문에 효율이 떨어질 수 있기 때문에 **Spring Data R2DBC**와 같은 리액티브 API를 활용해서 데이터를 저장할 예정이다.
+
+
+### Appendix
+#### Fallback vs Fallback Factory
+- 단순히 Fallback을 쓸 경우 오류는 핸들링할 수 있지만 정확히 어떤 오류에 의해 예외 처리되었는지 설정할 수 없다.
+- Fallback Factoty를 활용하는 경우 발생한 오류에 따라 알맞는 예외 처리를 제공할 수 있다.
