@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "PaymentFeign",
         url = "http://localhost:9001",
-        fallback = PaymentClientFallback.class)
+        // fallback = PaymentClientFallback.class
+        fallbackFactory = PaymentClientFallbackFactory.class)
 public interface PaymentClient {
 
     @PostMapping("/payment")

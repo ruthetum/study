@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "MailFeign",
         url = "http://localhost:9002",
-        fallback = MailClientFallback.class)
+        //fallback = MailClientFallback.class
+        fallbackFactory = MailClientFallbackFactory.class)
 public interface MailClient {
 
     @PostMapping("/mail")

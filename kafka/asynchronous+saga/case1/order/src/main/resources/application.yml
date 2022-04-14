@@ -20,3 +20,24 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+      circuitBreaker:
+        requestVolumeThreshold: 5
+        errorThresholdPercentage: 50
