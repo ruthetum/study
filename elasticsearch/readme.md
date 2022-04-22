@@ -4,9 +4,6 @@
 - [엘라스틱 스택](./contents/overview.md)
 - [설치 방법 (Windows)](./contents/windows-settings.md)
 
-## Version
-- 책에서는 7.10.1 버전으로 진행했으나 현재(22.04.10) 기준 latest 버전인 8.1 버전으로 학습
-
 
 
 
