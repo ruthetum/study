@@ -160,7 +160,7 @@ dependencies {
 ### Aspect 정의 : `@Aspect`
 - Bean으로 등록해야 하므로 (컴포넌트 스캔을 사용한다면) `@Componet`도 추가
 
-### PoinCut 정의
+### PointCut 정의
 #### execution
 - ex. `@Around("execution(* com.example..*.EventService.*(..))")`
 
