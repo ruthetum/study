@@ -160,7 +160,7 @@ dependencies {
 ### Aspect 정의 : `@Aspect`
 - Bean으로 등록해야 하므로 (컴포넌트 스캔을 사용한다면) `@Componet`도 추가
 
-### PoinCut 정의 : `@PointCut(표현식)`
+### PoinCut 정의
 #### execution
 - ex. `@Around("execution(* com.example..*.EventService.*(..))")`
 
@@ -180,6 +180,49 @@ dependencies {
     - `RetentionPolicy.RUNTIME` : 런타임까지 유지 (굳이 할 필요 없음)
 
 - 애노테이션을 정의하고, 해당 애노테이션을 원하는 메소드에 추가
+
+### Example
+```java
+// aspect
+@Aspect
+@Component
+public class PerfAspect {
+
+    // @Around("execution(* com.example..*.EventService.*(..))") // execution
+    @Around("@annotation(PerfLogging)")
+    public Object logPerf(ProceedingJoinPoint pjp) throws Throwable {
+        long begin = System.currentTimeMillis();
+        Object retVal = pjp.proceed();
+        System.out.println(System.currentTimeMillis() - begin);
+        return retVal;
+    }
+}
+
+// interface
+@Documented
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
+public @interface PerfLogging {
+}
+
+// service
+@Service
+public class EventServiceImpl implements EventService {
+
+    @PerfLogging
+    @Override
+    public void createEvent() {
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Created an event");
+    }
+
+    ...
+}
+```
     
 ### cf. pointcut 관련
 - https://docs.spring.io/spring-framework/docs/2.5.x/reference/aop.html
