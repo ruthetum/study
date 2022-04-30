@@ -25,12 +25,12 @@ spring:
       order: order
       payment: payment
     consumer:
-      bootstrap-servers: { { your bootstrap server uri } }
-      group-id: { { kafka group id } }
+      bootstrap-servers: { your bootstrap server uri }
+      group-id: { kafka group id }
       auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
-      bootstrap-servers: { { your bootstrap server uri } }
+      bootstrap-servers: { your bootstrap server uri }
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer

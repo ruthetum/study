@@ -1,5 +1,8 @@
 package com.mvc.orderkafka.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mvc.orderkafka.kafka.event.PaymentRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,8 +17,15 @@ public class KafkaProducer {
     @Value("${spring.kafka.topic.order}")
     private String orderTopic;
 
-    @Value("${spring.kafka.topic.payment}")
-    private String paymentTopic;
-
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper mapper;
+
+    public void publishOrder(PaymentRequest paymentRequest) {
+        try {
+            kafkaTemplate.send(orderTopic, mapper.writeValueAsString(paymentRequest));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
 }
