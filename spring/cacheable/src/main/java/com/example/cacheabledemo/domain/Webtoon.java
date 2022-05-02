@@ -21,7 +21,7 @@ public class Webtoon implements Serializable {
     @Column(name = "webtoon_id")
     private Long id;
 
-    @Column(name = "webtoon_no", unique = true)
+    @Column(name = "webtoon_no")
     private String webtoonNo;
 
     private String title;

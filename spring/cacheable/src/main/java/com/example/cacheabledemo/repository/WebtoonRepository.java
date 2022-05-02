@@ -7,5 +7,5 @@ import java.time.DayOfWeek;
 import java.util.List;
 
 public interface WebtoonRepository extends JpaRepository<Webtoon, Long> {
-    List<Webtoon> findByDayOfWeek(DayOfWeek dayOfWeek);
+    List<Webtoon> findTop50ByDayOfWeek(DayOfWeek dayOfWeek);
 }

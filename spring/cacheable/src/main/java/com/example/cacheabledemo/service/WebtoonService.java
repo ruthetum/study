@@ -21,12 +21,12 @@ public class WebtoonService {
 
     public List<Webtoon> getTodayWebtoon() {
         DayOfWeek todayDayOfWeek = LocalDate.now().getDayOfWeek();
-        return webtoonRepository.findByDayOfWeek(todayDayOfWeek);
+        return webtoonRepository.findTop50ByDayOfWeek(todayDayOfWeek);
     }
 
     @Cacheable(value = CacheKey.TODAY_WEBTOON, key = "0")
     public List<Webtoon> getTodayWebtoonWithCache() {
         DayOfWeek todayDayOfWeek = LocalDate.now().getDayOfWeek();
-        return webtoonRepository.findByDayOfWeek(todayDayOfWeek);
+        return webtoonRepository.findTop50ByDayOfWeek(todayDayOfWeek);
     }
 }
