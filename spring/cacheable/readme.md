@@ -129,10 +129,29 @@ public void clearWebtoon(Webtoon webtoon) {
 - 두 가지 상황(캐시 적용/미적용)에 대한 API를 만들고 각각의 상황에 알맞게 API를 요청한다.
 - 이후 nGrinder를 통해 TPS를 측정하고, JMeter를 이용해서 평균, 최소, 최대 응답시간을 측정한다.
 
-### Result
+## Result
+### TPS 측정
+- Agent : 1
+- Vusers : 10 (Processes : 2, Threads : 5)
+- Run Count : 5000
 
+#### 캐시 미적용
+![image](https://user-images.githubusercontent.com/59307414/166439548-6aa0d220-2a14-4159-bb00-1ba60946f59d.png)
+
+#### 캐시 적용
+![image](https://user-images.githubusercontent.com/59307414/166439747-e0602670-83e5-49d4-9283-9b023fc95a41.png)
+
+### 응답시간 측정
+- Threads : 500
+- Period : 1
+- Count : 500
+
+![image](https://user-images.githubusercontent.com/59307414/166441851-ecf460c4-a20e-4b9d-93c3-a1fe99c1a611.png)
 
 ## Conclusion
+- 캐시를 적용했을 때 TPS로 보나 평균 응답시간으로 보나 확실히 DB를 반복해서 조회하는 것보다 캐시를 이용하는 것이 효율적이다.
+- 자주 호출되면서 변경이 적은 메소드에 적용한다면 효과적으로 기능을 제공할 수 있다.
+- 스프링의 경우 AOP 형태 및 애노테이션 기반으로 쉽게 캐시를 저장/조회/수정할 수 있기 때문에 기능에 따라 캐시를 적용하기에 알맞는 조건인 경우, 해당 경우에서 기능적으로 최적화가 필요한 경우 캐시를 적용하자.
 
 ## Reference
 - [스프링 공식 문서 - Cacheable](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/annotation/Cacheable.html)
