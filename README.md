@@ -13,6 +13,7 @@
 
 ### Redis
 - [Redis 야무지게 쓰기](./redis)
+- [Redis vs Memcached](./redis/compairson-redis-memcached.md)
 
 ### Java
 - [Effective Java 정리](./effective-java)
@@ -23,6 +24,13 @@
 
 ### Web Server
 - [Apache vs Nginx](./nginx/compairson-apache-nginx.md)
+
+### Spring
+- [AOP](./spring/aop/)
+- [Spring Cache with AOP](./spring/cacheable/)
+
+### MSA
+- [Saga 패턴](./saga/)
 
 ## 🔬 Experiment
 - [Spring으로 이것저것](https://github.com/ruthetum/my-spring)
