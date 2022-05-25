@@ -83,3 +83,106 @@ TDD는 테스트를 통과할 만큼만 코드를 작성한다. 필요할 것으
 
 </div>
 </details>
+
+## Junit 5
+### Junit 5 모듈 구성
+- Junit 플랫폼 : 테스팅 프레임워크를 구동하기 위한 런처와 테스트 엔진을 위한 API 제공
+- Junit 주피터 : Junit 5를 위한 테스트 API와 실행 엔진을 제공
+- Junit 빈티지 : Junit 3과 4로 작성된 테스트를 Junit 5 플랫폼에서 실행하기 위한 모듈을 제공
+
+### 주요 단언 메서드
+Assertions 클래스는 assertEquals 메서드를 포함해서 아래의 단언 메서드를 제공한다.
+
+|Method|Description|
+|---|---|
+|assertEquals(expected, actual)|실제 값(actual)이 기대하는 값(expected)과 같은지 검사|
+|assertNotEquals(expected, actual)|실제 값(actual)이 기대하는 값(expected)과 같지 않은지 검사|
+|assertSame(Object expected, Object actual)|두 객체가 동일한 객체인지 검사|
+|assertNotSame(expected, actual)|두 객체가 동일하지 않은 객체인지 검사|
+|assertTrue(boolean condition)|값이 true인지 검사|
+|assertFalse(boolean condition)|값이 false인지 검사|
+|assertNull(Object actual)|값이 null인지 검사|
+|assertNotNull(Object actual)|값이 null이 아닌지 검사|
+|fail()|테스트를 실패 처리|
+
+#### Assertions가 제공하는 익셉션 발생 유무 검사 메서드
+|Method|Description|
+|---|---|
+|assertThrows(Class<T> expectedType, Executable executable)|executabl을 실행한 결과로 지정한 타입의 익셉션이 발생하는지 검사|
+|assertDoesNotThrow(Executable executable)|executabl을 실행한 결과로 익셉션이 발생하지 않는지 검사|
+
+#### assertAll()
+```java
+public class SampleTest {
+    
+    @Test
+    void 모든_검증_실행후_실패한_것이_있는지_확인() {
+        assertAll(
+                () -> assertEquals(3, 5/2),
+                () -> assertEquals(4, 2*2),
+                () -> assertEquals(6, 1+5)
+        );
+    }
+}
+```
+`assertAll()` 메서드를 통해 모든 검증을 실행하고 그 중에 실패한 것이 있는지 확인할 수 있다.
+
+### 테스트 라이프사이클
+#### @BeforeEach, @AfterEach
+Junit은 각 테스트 메서드마다 다음 순서대로 코드를 실행한다.
+
+> 1. 테스트 메서드를 포함한 객체 생성
+> 2. (@BeforeEach 애노테이션 존재 시) @BeforeEach 애노테이션이 붙은 메서드 실행
+> 3. @Test 애노테이션이 붙은 메서드 실행
+> 4. (@AfterEach 애노테이션 존재 시) @AfterEach 애노테이션이 붙은 메서드 실행
+
+
+#### @BeforeAll
+- 한 클래스의 모든 테스트 메서드가 실행되기 전에 특정 작업을 수행해야 하는 경우 활용
+- 정적 메서드에 붙여서 사용하고, 클래스의 모든 테스트 메서드를 실행하기 전에 한 번 실행
+
+#### @AfterAll
+- 클래스의 모든 테스트 메서드를 실행한 뒤에 실행
+- 마찬 가지로 정적 메서드에 적용
+
+<details>
+<summary>실습</summary>
+<div markdown="1">
+
+[chapter 5. 라이프사이클](./src/test/java/chap05/lifecycle)
+
+</div>
+</details>
+
+### 테스트 메서드 간 실행 순서 의존과 필드 공유 방지
+```java
+public class BadTest {
+    private FileOperator o = new FileOperator();
+    private static File file; // 두 테스트가 데이터를 공유할 목적으로 필드 사용
+
+    @Test
+    void fileCreationTest() {
+        File createdFile = op.createFile();
+        assertTrue(createdFile.length() > 0);
+        this.file = createdFile;
+    }
+    
+    @Test
+    void readFileTest() {
+        long data = op.readData(file);
+        assertTrue(data > 0);
+    }
+}
+```
+작성한 순서대로 테스트 메서드가 실행될 때는 문제없지만 `readFileTest()`가 먼저 실행되는 경우 file 필드가 null이기 때문에 테스트에 실패하게 된다.
+
+각 테스트 메서드는 서로 독립적으로 동작해야 한다. 한 테스트 메서드의 결과에 따라 다른 테스트 메서드의 실행 결과가 달라지면 안 된다.
+
+그런 의미에서 테스트 메서드가 서로 필드를 공유한다거나 실행 순서를 가정하고 테스트를 작성하지 말아야 한다.
+
+### 추가 애노테이션
+#### @DisplayName
+테스트에 표시 이름을 붙일 수 있다.
+
+#### @Disabled
+특정 테스트를 실행하지 않고 싶을 때 활용한다.
