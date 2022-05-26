@@ -225,3 +225,72 @@ public class BadTest {
 - 비밀번호의 강도가 약한지 검사한다 -> Stub 활용
 - 동일한 ID를 가진 회원이 존재한 경우 익셉션을 발생하는지 검사한다 -> Fake 활용 (Repository를 메모리, fake로 구현)
 - 이메일 발송 여부를 확인한다 -> Spy 활용 (특정 이메일 주소를 사용했는지 확인)
+
+
+## 테스트 가능한 설계
+### 테스트가 어려운 코드
+- 하드 코딩된 경로
+  
+    ```java
+    public class PaySync {
+        public void sync() throws IOException {
+            Path path = Paths.get("D:\\data\\pay\\cp0001.csv");
+            ...
+        }
+    }
+    ```
+
+- 의존 객체를 직접 생성
+    ```java
+    public class PaySync {
+        // 의존 대상을 직접 생성
+        private PayInfoDao payInfoDao = new PayInfoDao();
+        
+        public void sync() throws IOException {
+            ...
+            payInfo.forEach(pi -> payInfoDao.insert(pi));
+        }
+    }
+    ```
+
+- 정적 메소드 사용
+
+- 실행 시점에 따라 달라지는 결과
+
+- 역할이 섞여 있는 코드
+
+- 메서드 중간에 소켓 통신 코드가 포함되어 있는 경우
+
+- 콘솔에서 입력을 받거나 결과를 콘솔에 출력하는 경우
+
+- 테스트 대상이 사용하는 의존 대상 클래스나 메서드가 final인 경우
+
+### 테스트 가능한 설계
+- 생성자나 메서드 파라미터로 받기
+  
+    ```java
+    public class PaySync {
+  
+        private String filePath = "D:\\data\\pay\\cp0001.csv";
+  
+        public void setFilePath(String filePath) {
+            this.filePath = filePath;
+        }
+        
+        public void sync() throws IOException {
+            Path path = Paths.get(filePath);
+            ...
+        }
+    }
+    ```
+  
+- 의존 대상을 주입받기
+
+- 테스트하고 싶은 코드를 분리하기
+
+- 시간이나 임의 값 생성 기능 분리하기
+
+- 외부 라이브러리는 직접 사용하지 말고 감싸서 사용하기
+
+## 테스트 범위와 종류
+![image](https://user-images.githubusercontent.com/59307414/170519165-f7386af1-17d4-4d17-8275-17406252a98b.png)

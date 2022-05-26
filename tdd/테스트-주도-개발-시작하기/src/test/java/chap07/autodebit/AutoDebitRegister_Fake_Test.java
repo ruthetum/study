@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static chap07.autodebit.CardValidity.INVALID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AutoDebitRegister_Fake_Test {
 

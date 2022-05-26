@@ -24,4 +24,8 @@ public class AutoDebitInfo {
     public LocalDateTime getTime() {
         return time;
     }
+
+    public void changeCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
 }
