@@ -225,7 +225,7 @@ public class RedisConfig {
 
 이후에는 원하는 메서드에 @Transactional 애노테이션을 붙여서 사용하면 된다.
 
-@Transactional 애노테이션이 붙게 되면 메서드 시작 시 multi가 실행되고, 메서드 종료 시 exec이 작동된다.
+@Transactional 애노테이션이 붙게 되면 메서드 시작 시 multi가 실행되고, 메서드 종료 시 exec이 작동된다. (ThreadLocal 기반으로 작동된다.)
 
 예외가 발생하는 경우에는 discard가 실행된다.
 
@@ -242,6 +242,10 @@ public class IndexService {
     }
 }
 ```
+
+> @Transactional은 ThreadLocal 기반이기 때문에 reactive 환경에서는 정상적으로 동작하지 않는다.
+> 
+> reactive 환경에서 Transactional을 유지하기 위해서는 Netty 기반의 Redisson을 이용해야 한다.
 
 ---
 <br>
