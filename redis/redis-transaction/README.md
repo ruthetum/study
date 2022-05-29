@@ -20,6 +20,8 @@ Redis에서는 **MULTI**, **EXEC**, **DISCARD**, **WATCH** 명령어를 이용�
 <summary>낙관적 락(Optimistic Lock)과 비관적 락(Pessimistic Lock)</summary>
 <div markdown="1">
 
+<br>
+
 DB에서 충돌 상황을 방지하기 위해서는 두 가지 방법이 존재한다.
 
 1. 테이블의 row에 접근 시 Lock을 걸고, Lock이 걸려 있지 않을 경우에만 수정이 가능하게 한다.
@@ -56,6 +58,8 @@ DB에서 충돌 상황을 방지하기 위해서는 두 가지 방법이 존재�
 
 따라서 결과적으로 비관적 락 보다 좋지 않을 수 있다. 이러한 단점 때문에 낙관적 락은 충돌이 많이 예상되거나 충돌이 발생했을 때 비용이 많이 들 것이라고 판단되는 곳에서는 사용하지 않는 것이 좋다.
 
+<br>
+
 </div>
 </details>
 
@@ -65,6 +69,7 @@ DB에서 충돌 상황을 방지하기 위해서는 두 가지 방법이 존재�
 > 이 경우에 RDBMS 처럼 Lock을 계속 잡는게 아니라 트랜잭션이 시작된 상황에서 값 변경을 1번으로 제한하는 기능이다.
 
 ---
+<br>
 
 ## Redis CLI를 이용한 트랙잭션 테스트
 ### MULTI
@@ -114,7 +119,7 @@ WATCH 명령어를 이용해서 특정 Key를 트랜잭션에서 값 변경을 1
 
 ![image](https://user-images.githubusercontent.com/59307414/170672297-738cc9cc-dd83-4060-b797-a988e53c9db9.png)
 
-UNWATCH 명령어를 이용하면 key에 걸린 Lock을 풀어줄 수 있다. (각각의 key별로 UNWATCH를 직접 선언할 수는 없다.)
+UNWATCH 명령어를 이용하면 key에 걸린 Lock을 풀어줄 수 있다. (**각각의 key별로 UNWATCH를 직접 선언할 수는 없다.**)
 
 ![image](https://user-images.githubusercontent.com/59307414/170673064-beef1362-f44a-476f-a459-1d6a0152ad39.png)
 
@@ -129,10 +134,117 @@ WATCH 명령어 이후 하나의 트랜잭션에서 여러 번이 값이 수정�
 ![image](https://user-images.githubusercontent.com/59307414/170674195-47ef958a-0b46-4d0d-81cb-66e5351e552b.png)
 
 ---
+<br>
 
 ## Spring 환경에서의 트랜잭션 테스트
+### dependency
+```groovy
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // implementation 'org.springframework:spring-tx:{version}'
+    implementation 'org.springframework:spring-tx:5.3.9'    // 트랜잭션
+}
+```
+
+### 설정
+```java
+public class RedisConfig {
+
+    ...
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setEnableTransactionSupport(true); // Redis 트랜잭션 설정
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        return redisTemplate;
+    }
+}
+```
+
+### Operations 활용
+CLI 환경에서 사용했던 것처럼 multi, watch, discard 등의 명령어를 이용하여 트랜잭션을 처리할 수 있다.
+
+다만 transaction을 유지하기 위해서는 동일한 connection을 유지할 필요가 있다.
+
+그러나 일반적인 RedisTemplate 명령어는 connection을 유지하지 않기 때문에 connection을 유지하기 위한 명령어로 SessionCallback를 사용할 필요가 있다.
+
+```java
+@Service
+public class IndexService {
+
+    private final RedisTemplate redisTemplate;
+
+    public void useOperations() {
+        try {
+            redisTemplate.execute(new SessionCallback<List<Object>>() {
+                public List<Object> execute(RedisOperations operations) {
+                    // redis transaction 시작
+                    operations.multi();
+
+                    // operations.watch("apple"); // watch 사용 예
+
+                    operations.opsForValue().set("apple", "iphone1");
+                    operations.opsForValue().set("samsung", "galaxy1");
+
+                    // operations.discard(); // discard 사용 예
+
+                    // redis transaction 종료
+                    return operations.exec();
+                }
+            });
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### @Transactional
+@Transactional 애노테이션을 이용하여 connection을 유지하기 위해서는 RedisTemplate 설정에서 setEnableTransactionSupport(true)를 추가해야 한다.
+
+```java
+@Configuration
+public class RedisConfig {
+
+    ...
+    
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setEnableTransactionSupport(true); // Redis 트랜잭션 설정
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        return redisTemplate;
+    }
+}
+```
+
+이후에는 원하는 메서드에 @Transactional 애노테이션을 붙여서 사용하면 된다.
+
+@Transactional 애노테이션이 붙게 되면 메서드 시작 시 multi가 실행되고, 메서드 종료 시 exec이 작동된다.
+
+예외가 발생하는 경우에는 discard가 실행된다.
+
+```java
+@Service
+public class IndexService {
+
+    private final RedisTemplate redisTemplate;
+
+    @Transactional
+    public void useTransactionalAnnotation() {
+        redisTemplate.opsForValue().set("apple", "iphone2");
+        redisTemplate.opsForValue().set("samsung", "galaxy2");
+    }
+}
+```
 
 ---
+<br>
 
 ## Reference
 - https://redis.io/docs/manual/transactions/
