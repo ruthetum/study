@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    ['armeria',
+     'armeria-brave',
+     'armeria-grpc',
+     'armeria-jetty9',
+     'armeria-kafka',
+     'armeria-logback',
+     'armeria-retrofit2',
+     'armeria-rxjava3',
+     'armeria-saml',
+     'armeria-thrift0.13',
+     'armeria-tomcat9',
+     'armeria-zookeeper3'].each {
+        implementation "com.linecorp.armeria:${it}:1.16.0"
+    }
+
+    runtimeOnly 'ch.qos.logback:logback-classic:1.2.11'
+    runtimeOnly 'org.slf4j:log4j-over-slf4j:1.7.36'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
