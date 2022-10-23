@@ -10,3 +10,5 @@
 
 ## Reference
 - https://msyu1207.tistory.com/entry/1장-헤드퍼스트-디자인-패턴-전략-패턴
+- https://refactoring.guru/design-patterns/strategy
+- cache 정책을 strategy 패턴으로 : https://refactoring.guru/design-patterns/strategy/go/example
