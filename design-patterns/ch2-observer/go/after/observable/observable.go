@@ -1,9 +1,9 @@
-package subject
+package observable
 
 import "observer/observer"
 
-type Subject interface {
+type Observable interface {
 	RegisterObserver(observer observer.Observer)
 	RemoveObserver(observer observer.Observer)
-	NotifyObserver()
+	NotifyAll()
 }

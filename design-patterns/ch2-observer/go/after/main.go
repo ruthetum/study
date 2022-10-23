@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"observer/observable"
 	"observer/observer"
-	"observer/subject"
 )
 
 func main() {
-	weatherData := subject.NewWeatherData()
+	weatherData := observable.NewWeatherData()
 
 	currentDisplay := observer.NewCurrentConditionsDisplay()
 	statisticsDisplay := observer.NewStatisticsDisplay()

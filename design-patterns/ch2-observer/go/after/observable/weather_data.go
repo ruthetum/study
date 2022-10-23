@@ -1,4 +1,4 @@
-package subject
+package observable
 
 import "observer/observer"
 
@@ -27,14 +27,14 @@ func (d *WeatherData) RemoveObserver(observer observer.Observer) {
 	}
 }
 
-func (d *WeatherData) NotifyObserver() {
+func (d *WeatherData) NotifyAll() {
 	for _, o := range d.Observers {
 		o.Update(d.Temperature, d.Humidity, d.Pressure)
 	}
 }
 
 func (d *WeatherData) MeasurementsChanged() {
-	d.NotifyObserver()
+	d.NotifyAll()
 }
 
 func (d *WeatherData) SetMeasurements(temp, humidity, pressure float64) {
