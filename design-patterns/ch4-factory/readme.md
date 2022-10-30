@@ -34,12 +34,44 @@
 
 ## 구현 관련
 ```
-
+.
+├── cheese
+│      ├── cheese.go
+│      ├── mozzarella_cheese.go
+│      └── parmesan_cheese.go
+├── dough
+│      ├── dough.go
+│      ├── thick_dough.go
+│      └── thin_dough.go
+├── sauce
+│      ├── marinara_sauce.go
+│      ├── plum_tomato_sauce.go
+│      └── sauce.go
+│
+├── pizza
+│      ├── cheese_pizza.go
+│      ├── pizza.go
+│      └── veggie_pizza.go
+│
+├── pizzafactory
+│      ├── chicago_pizza_ingredient_factory.go
+│      ├── ny_pizza_ingredient_factory.go
+│      └── pizza_ingredient_factory.go
+│
+├── pizzastore
+│      ├── chicago_pizza_store.go
+│      ├── ny_pizza_store.go
+│      └── pizza_store.go
+│
+├── go.mod
+└── main.go
 ```
 
 # Factory method vs Abstract Factory
 - 팩토리 메서드는 서브 클래스로 직접 생성
 - 추상 팩토리는 구상 클래스를 지정하지 않고, 인터페이스로 전달
+- 팩토리 비교: https://refactoring.guru/ko/design-patterns/factory-comparison
+
 
 ## Reference
 - https://refactoring.guru/ko/design-patterns/factory-method
