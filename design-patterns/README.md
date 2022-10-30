@@ -6,10 +6,11 @@
 
 ## 목차
 
-| Chapter | Pattern  |           Description          |           Directory            | Classification  |
-|:-------:|:--------:|:-------------------------------|:------------------------------:|:---------------:|
-|    1    | 전략(Stratergy) |동일 계열의 알고리즘군을 정의하고 캡슐화하여 상호 교환이 가능하게 함| [ch1-strategy](./ch1-strategy) |행동(행위 패턴)|
-|    2    |옵저버(Observer)|객체 상태가 변할 때 관련 객체들이 그 변화를 전달받아 자동으로 캐싱| [ch2-observer](./ch2-observer) |행동(행위 패턴)|
+| Chapter |     Pattern      |           Description          |           Directory            | Classification |
+|:-------:|:----------------:|:-------------------------------|:------------------------------:|:--------------:|
+|    1    |  전략(Stratergy)   |동일 계열의 알고리즘군을 정의하고 캡슐화하여 상호 교환이 가능하게 함| [ch1-strategy](./ch1-strategy) |   행동(행위) 패턴    |
+|    2    |  옵저버(Observer)   |객체 상태가 변할 때 관련 객체들이 그 변화를 전달받아 자동으로 캐싱| [ch2-observer](./ch2-observer) |   행동(행위) 패턴    |
+|    3    | 데코레이터(Decorator) |주어진 상황에 따라 객체에 다른 객체를 덧붙임|      [ch3-decorator](./ch3-decorator)       |     구조 패턴      |
 
 ## GoF 디자인 패턴
 #### 목적에 따른 분류
