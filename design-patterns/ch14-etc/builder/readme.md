@@ -1,5 +1,5 @@
 # Builder pattern
-- 구현부에서 추상층을 분리하여 각자 독립적으로 변형하고 확장
+- 객체의 생성과 표현을 분리하여 객체를 생성
 
 ## Structure
 ![image](https://refactoring.guru/images/patterns/diagrams/builder/structure-2x.png)
