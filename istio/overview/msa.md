@@ -31,6 +31,27 @@
 - 모니터링 서비스 Turbine
 - API 게이트웨이 패턴의 Zuul -> Spring Cloud Gateway
 
+## MSA 구조의 공통적인 문제들
+<img width="419" alt="스크린샷 2022-12-05 오후 10 04 23" src="https://user-images.githubusercontent.com/59307414/205644156-02dc8c6b-a4ca-47e2-8a00-6c2feaf52ef2.png">
+
+- 모니터링
+- 중앙 로그 수집
+- 분산 트랜잭션 추적
+- 중복 인증 처리
+- ...
+
+> 이를 해결하기 위해 전통적인 방식에서는 **API Gateway** 도입
+
+<img width="533" alt="스크린샷 2022-12-05 오후 10 04 36" src="https://user-images.githubusercontent.com/59307414/205644190-d25c0840-df94-4679-8cee-94ef03cd1e02.png">
+
+- 앞단에서 공통적인 문제를 해결
+- 클라이언트로부터 들어오는 요청을 GW가 받고, 중앙집중형으로 문제를 해결
+    - 요청 로그 수집, 트랜잭션 관리, GW를 모니터링, 마이크로서비스별 latency 측정
+- GW에서 요청을 핸들링하면서 문제 발생
+    - GW에 집중 부하 발생
+    - GW에 비즈니스 로직 추가 및 인프라 복잡도 증가
+    - GW에 장애 발생 시 전체 서비스 장애로 이어짐
+
 ## 서비스 메쉬(Service Mesh)의 등장
 - 컨테이너 오케스트레이션 툴 Kubernetes의 등장
 - 여러 사이드카 컨테이너를 함께 띄울 수 있는 Pod
