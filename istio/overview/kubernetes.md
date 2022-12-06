@@ -44,3 +44,11 @@
 - 쿠버네티스의 상태를 핸들링할 수 있는 Control plane의 API server 제공
 - kubectl 명령어의 도구
 - 쿠버네티스의 오브젝트들의 질의하고 조작할 수 있음 (ex. `kubectl get pods -A`)
+
+# 쿠버네티스 리소스 관리
+## kubernetes 리소스를 편리하게 관리
+- kube-ps1: https://github.com/jonmosco/kube-ps1
+- kubectx: https://github.com/ahmetb/kubectx
+  - 대화식: `brew install fzf`
+
+
