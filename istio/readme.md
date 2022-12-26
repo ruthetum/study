@@ -77,6 +77,40 @@
   ```
 - 서비스 앱의 세밀한 **네트워킹 설정에 대한 책임**을 가져옴
 
+## istio 환경 구성
+### istioctl을 이용한 환경 구성
+- download: https://istio.io/latest/docs/setup/getting-started/#download
+  ```shell
+  curl -L https://istio.io/downloadIstio | sh -
+  cd istio-1.16.1
+  export PATH=$PWD/bin:$PATH
+  ```
+
+- install: https://istio.io/latest/docs/setup/install/istioctl/
+  ```shell
+  istioctl install
+  // istioctl install --set meshConfig.accessLogFile=/dev/stdout
+  ```
+  - install configuration: https://istio.io/latest/docs/setup/additional-setup/config-profiles/
+  - 보통 default로 설치하고 커스텀하는 방식
+
+- profile 확인: `istioctl profile dump [profile name]`
+  - profile list 확인: `istioctl profile list`
+
+- profile diff: `istioctl profile diff [profile1] [profile2]`
+  - 프로필간 차이 확인
+
+- manifast 파일 생성: `istioctl manifest generate > $HOME/generated-manifest.yaml`
+
+### istioOperator를 이용한 환경 구성
+https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/
+
+```shell
+istio operator init
+```
+### 사이드카 인젝션
+TBU
+
 ## Related
 - [모놀리틱, 마이크로서비스의 장단점과 서비스 메쉬의 등장](./overview/msa.md)
 - [DevOps와 SRE 개념](./overview/devops.md)
