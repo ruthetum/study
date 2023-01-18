@@ -1,3 +1,10 @@
+> 아래 내용은 AOP에 관한 간단한 설명입니다.
+>
+> 더 자세한 내용은 아래 링크를 참고해주세요.
+>
+> [https://github.com/ruthetum/my-spring/tree/main/i-advanced/aop](https://github.com/ruthetum/my-spring/tree/main/i-advanced/aop#%EC%8A%A4%ED%94%84%EB%A7%81-aop)
+
+
 # AOP(Aspect Oriented Programming)
 - OOP를 보완하는 수단으로, 흩어진 Aspect를 모듈화할 수 있는 프로그래밍 기법
 
