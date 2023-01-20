@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"isolevel/model"
+	"log"
 
 	"github.com/bwmarrin/snowflake"
 	"gorm.io/gorm"
@@ -25,7 +26,10 @@ func (r Repository) CreateUniqueID() string {
 }
 
 func (r Repository) Save(message model.MessageOne) (err error) {
-	err = r.DB.Model(&model.MessageOne{}).Create(message).Error
+	err = r.DB.Model(&model.MessageOne{}).Create(&message).Error
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return
 }
 

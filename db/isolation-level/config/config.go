@@ -28,6 +28,8 @@ func InitMongo(ctx context.Context) *mongo.Client {
 	// mongodb+srv://<username>:<password>@cluster0-zzart.mongodb.net/test?retryWrites=true&w=majority
 	uri := "mongodb://root:1234@localhost:27017"
 	clientOptions := options.Client().ApplyURI(uri)
+	clientOptions.SetMinPoolSize(30)
+	clientOptions.SetMaxPoolSize(30)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		panic(err)
@@ -47,7 +49,6 @@ func InitMongo(ctx context.Context) *mongo.Client {
 			Options: options.Index().SetUnique(false),
 		},
 	}
-
 	_, err = client.Database(MongoDatabaseName).Collection(MongoCollectionName).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		panic(err)
