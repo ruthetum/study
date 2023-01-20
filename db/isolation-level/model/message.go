@@ -14,10 +14,10 @@ type Message interface {
 }
 
 type MessageOne struct {
-	ID        uint           `gorm:"primarykey"`
-	MessageID string         `json:"message_id,omitempty" gorm:"unique_index"`
+	ID        uint           `json:"id" gorm:"primarykey"`
+	MessageID string         `json:"message_id,omitempty" gorm:"index:,unique,sort:desc"`
 	Type      string         `json:"type,omitempty"`
-	Subject   string         `json:"subject,omitempty" gorm:"unique_index"`
+	Subject   string         `json:"subject,omitempty" gorm:"index"`
 	Content   datatypes.JSON `json:"content,omitempty"`
 	CreatedAt time.Time      `json:"created_at,omitempty"`
 }

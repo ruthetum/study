@@ -17,9 +17,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	sqlDB.SetMaxIdleConns(30)
-	sqlDB.SetMaxOpenConns(30)
-	sqlDB.SetConnMaxLifetime(time.Minute * 30)
+	sqlDB.SetMaxIdleConns(100)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Minute * 60)
 
 	defer func() {
 		if err := sqlDB.Close(); err != nil {
@@ -28,7 +28,7 @@ func main() {
 	}()
 
 	// Init Mongo
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Minute)
 	defer cancel()
 	// ctx := context.Background()
 
@@ -52,8 +52,8 @@ func main() {
 	factory.DeleteMySQLDummy()
 	factory.DeleteMongoDummy()
 
-	sizes := []int{1000, 5000, 10000, 50000, 100000}
-	dbTypes := []bool{true, false}
+	sizes := []int{1000, 5000, 10000, 50000}
+	dbTypes := []bool{false}
 
 	for _, dbType := range dbTypes {
 		for _, size := range sizes {

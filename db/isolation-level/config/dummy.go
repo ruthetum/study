@@ -13,7 +13,7 @@ import (
 
 const (
 	typeList          = 4
-	maxGoroutineCount = 31
+	maxGoroutineCount = 101
 )
 
 type DummyFactory struct {

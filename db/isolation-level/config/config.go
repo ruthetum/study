@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const (
@@ -17,7 +18,9 @@ const (
 
 func InitMySQL() *gorm.DB {
 	dsn := "root:1234@tcp(127.0.0.1:13306)/testdb?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -28,8 +31,8 @@ func InitMongo(ctx context.Context) *mongo.Client {
 	// mongodb+srv://<username>:<password>@cluster0-zzart.mongodb.net/test?retryWrites=true&w=majority
 	uri := "mongodb://root:1234@localhost:27017"
 	clientOptions := options.Client().ApplyURI(uri)
-	clientOptions.SetMinPoolSize(30)
-	clientOptions.SetMaxPoolSize(30)
+	clientOptions.SetMinPoolSize(100)
+	clientOptions.SetMaxPoolSize(100)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		panic(err)
