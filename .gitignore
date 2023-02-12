@@ -1,3 +1,4 @@
 .idea
 vcs.xml
 .DS_Store
+/db/docker-images/mongo/mongodb
