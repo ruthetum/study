@@ -276,90 +276,440 @@ SELECT col1, col3 FROM tbl GROUP BY col1, col2;
 - 메모리 임시 테이블의 크기가 지정된 시스템 변수 값보다 큰 경우
 
 # 고급 최적화
+옵티마이저가 실행계획을 수립할 때는 통계 정보와 옵티마이저 옵션을 결합해서 최적의 실행계획 수립 
+
+옵티마이저 옵션은 **조인과 관련된 옵티마이저 옵션**과 **옵티마이저 스위치**로 구분
+
 ## 옵티마이저 스위치 옵션
 
+옵티마이저 스위치 옵션은 `optimizer_switch` 시스템 변수를 이용해서 제어
+
+![image](https://user-images.githubusercontent.com/59307414/218299446-9ece21ab-d8ee-4040-a2f1-ace7ca067e5e.png)
+
+![image](https://user-images.githubusercontent.com/59307414/218299449-b1856fe6-8481-4b18-9aa2-f51f4d40f2c4.png)
+
 ### MRR, 배치 키 엑세스 (mmr, batched_key_access)
+#### MMR(Multiple-Range Read)
+기존에 MySQL에서 지원하던 조인 방식은 **네스티드 루프 조인**(Nested Loop Join) 방식
+
+- 네스티드 루프 조인은 조인 조건에 일치하는 레코드를 찾기 위해 왼쪽 테이블의 레코드를 하나씩 읽어서 오른쪽 테이블의 레코드를 읽는 방식
+- 드라이빙 테이블의 레코드를 한 건 읽어서 드리븐 테이블의 일치하는 레코드를 찾아서 조인
+
+MySQL 서버의 내부 구조상 조인 처리는 MySQL 엔진이 처리하지만, 실제 레코드를 검색하고 읽는 부분은 스토리지 엔진이 담당
+
+- 이 때 드라이빙 테이블의 레코드의 건별로 드리븐 테이블의 레코드를 찾으면 레코드르 찾고 있는 스토리지 엔진에서는 아무런 최적화를 수행할 수 없음
+
+이런 단점을 보완하기 위해 MySQL 서버는 조인 대상 테이블 중 하나로부터 레코드를 읽어서 조인 버퍼에 버퍼링
+
+- 드라이빙 테이블의 레코드를 읽어서 드리븐 테이블과의 조인을 즉시 실행하지 않고 조인 대상을 버퍼링
+- 조인 버퍼에 레코드가 가득차면 MySQL 엔진은 버퍼링된 레코들르 스토리지 엔진에 한 번에 요청
+
+이러한 방식을 MMR이라고 하며, 이를 응용해서 실행되는 조인 방식을 BKA 조인이라고 함
+
+BKA 조인 최적화는 기본적으로 비활성화
+
+- 쿼리의 특성에 따라 BKA 조인이 큰 도움이 되는 경우도 있지만, BKA 조인을 사용하게 되면 부가적인 정렬 작업이 필요해서 오히려 성능 저하 유발
 
 ### 블록 네스티드 루프 조인 (block_nested_loop)
+네스티드 루프 조인과 가장 큰 차이는 조인 버퍼(`join_buffer_size`)가 사용되는지 여부와 조인에서 드라이빙 테이블과 드리븐 테이블이 어떤 순서로 조인되냐의 차이
+
+- 드리븐 테이블의 조인 조건이 인덱스를 이용할 수 없다면 드리븐 테이블에서 연결되는 레코드를 찾기 위해 풀 테이블 스캔을 반복적으로 실행
+- 드리븐 테이블의 풀 테이블 스캔 또는 인덱스 풀 스캔을 피할 수 없다면 옵티마이저는 드라이빙 테이블에서 읽은 레코드를 메모리에 캐시 후, 드리븐 테이블과 메모리 캐시를 조인하는 형태로 처리 -> 이 때 사용하는 메모리 캐시가 조인 버퍼
+- 조인 버퍼가 사용되는 쿼리에서는 조인의 순서가 거꾸로인 것처럼 실행
+  - 실제 드라이빙 테이블의 결과를 조인 버퍼에 담고, 드리빈 테이블을 먼저읽고 조인 버퍼에서 일치하는 레코드를 찾는 방식
+  - 일반적으로는 조인 수행 후에 결과는 드라이빙 테이블의 순서에 의해 결정되지만, 조인 버퍼가 사용되는 경우 조인의 정렬 순서가 흐트러질 수 있음
+
+조인 알고리즘에서 Block 이라는 단어가 사용되면 조인용으로 별도의 버퍼가 사용됐다는 것을 의미
+
+조인 쿼리의 실행 계획에서 `Extra` 컬럼에 `Using Join buffer`라고 표시되면 조인 버퍼를 사용하고 있다는 것
+
+8.0.18 버전부터는 해시 조인 알고리즘이 도입되면서 블록 네스티드 루프 조인은 더 이상 사용되지 않음
+
+> 해시 조인
+> 
+> 해시 조인은 네스티드 루프 조인에 비해 첫 번째 레코드를 찾는 데에 시간이 더 걸리지만 최종 레코드를 찾는데까지는 시간이 많이 걸리지 않음
+> 
+> - 해시 조인 쿼리는 Beset Throughput에 적합
+> - 네스티드 루프 조인은 Best Response Time에 적합
+> 
+> 일반적인 웹 서비스는 온라인 트랜잭션 서비스이기 때문에 throughput도 중요하지만 response time이 더 중요
+> 
+> - 조인 조건의 컬럼이 인덱스가 없거나 조인 대상 테이블 중 일부 레코드 건수가 매우 적은 경우에 한해 해시 조인 알고리즘 사용
+> - 보통은 네스티드 루프 조인 사용
 
 ### 인덱스 컨디션 푸시다운 (index_condition_pushdown)
+```mysql
+Alter table employees add index ix(first_name, last_name);
+
+select * from employees where first_name ='Acton' and last_name like '%sal';
+```
+
+ix(first_name, last_name) 이라는 인덱스가 있을때, last_name like ‘%sal’ 조건은 인덱스를 사용할 수 없는 조건
+
+MySQL 5.5 에서는 MySQL 엔진 → Innodb 스토리지 엔진으로 last_name 은 사용할 수 없는 조건이기에 전달조차 해주지 않음
+
+MySQL 5.6 이후 부터는 인덱스에 있는 컬럼은 모두 Innodb 스토리지 엔진으로 전달
+
+스토리지 엔진단에서 최대한 필터링까지 완료해서 MySQL 엔진으로 전달하게 되는데 이러한 처리 과정을 `Using index condition`
+
+- extra 컬럼에 `Using index condition` 표시
+
+index 조건에 대하여 스토리지 엔진에서 모두 처리하는 방법
 
 ### 인덱스 확장 (use_index_extensions)
+세컨더리 인덱스에 자동으로 추가된 PK를 활용할 수 있게 할지를 결정하는 옵션
+
+InnoDB 스토리지 엔진에서 세컨더리 인덱스는 데이터 레코드를 찾아가기 위해 프라이머리 키를 포함
+
+PK가 A, Secondary index가 B라면 실제 Secondary index는 (B, A)로 작동
+
+- 정렬 시에 인덱스를 탄다 -> `Using filesort`가 표시되지 않음
+
+<br/>
 
 ### 인덱스 머지 (index_merge)
+하나의 테이블에 대해 2개 이상의 인덱스를 이용해 쿼리를 처리
+
+where 조건이 여러 개 있더라도 하나의 인덱스에 포함된 컬럼에 대한 조건만으로 인덱스를 검색하고, 나머지 조건은 일겅온 레코드에 대해서 체크하는 형태가 일반적
+
+- 하지만 쿼리에 사용된 각각의 조건이 서로 다른 인덱스를 사용할 수 있고, **그 조건을 만족하는 레코드 건수가 많을 때**는 인덱스 머지 실행 계획 선택
+
+인덱스 머지 실행 계획은 3개의 세부 실행 계획으로 나눌 수 있음
+
+- index_merge_intersection
+- index_merge_sort_union
+- index_merge_union
 
 ### 인덱스 머지 - 교집합 (index_merge_intersection)
+여러 개의 인덱스를 각각 검색해서 그 결과의 교집합을 반환
+
+실행계획의 extra 칼럼에 `Using intersect` 표시
 
 ### 인덱스 머지 - 합집합 (index_merge_union)
+여러 개의 인덱스를 각각 검색해서 그 결과의 합집합을 반환
+
+- 중복된 값을 제거할 때에는 Priority queue 를 사용하여 제거
+
+실행계획의 extra 칼럼에 `Using union` 표시
 
 ### 인덱스 머지 - 정렬 후 합집합 (index_merge_sort_union)
+union 알고리즘은 두 결과의 집합의 중복을 제거를 위해 정렬된 결과가 필요
+
+만약 인덱스 머지 작업 중에 결과의 정렬이 필요한 경우에는 sort union 알고리즘을 사용
+
+실행계획의 extra 칼럼에 `Using sort_union` 표시
+
+<br/>
 
 ### 세미 조인 (semijoin)
+다른 테이블과 실제 조인을 수행하지는 않고, 단지 다른 테이블에서 조건에 일치하는 레코드가 있는지 없는지만 체크하는 형태의 쿼리
+
+- table pull-out
+  - 사용 가능하면 항상 세미 조인보다는 좋은 성능을 내기 때문에 별도로 제어하는 옵티마이저 옵션을 제공하지 않음
+- duplicate weed-out
+- first match
+- loose scan
+- materialization
 
 ### 테이블 풀-아웃 (table pull-out)
+세미 조인의 서브쿼리에 사용된 테이블을 아우터 쿼리로 끄집어낸 후에 쿼리를 조인 쿼리로 재작성하는 형태의 최적화
+
+IN(subquery) 형태의 세미 조인이 가장 빈번하게 사용되는 형태의 쿼리
+
+- IN 형태의 쿼리를 Join 형태로 재작성
+- `explain`으로 실행 계획을 확인할 때는 별도로 노출되지 않으며, `SHOW WARNINGS` 커맨드를 통해 확인 가능
 
 ### 퍼스트 매치 (first match)
+IN(subquery) 형태의 세미 조인을 EXISTS(subquery) 형태로 튜닝한 것과 비슷한 방법으로 실행
+
+실행계획의 extra 칼럼에 `FirstMatch()` 표시
 
 ### 루스 스캔 (loosescan)
+인덱스를 사용하는 GROUP BY 최적화 방법에서 언급된 Loose Index Scan(`Using index for group-by`)과 비슷한 읽기 방식을 사용
+
+실행계획의 extra 칼럼에 `LooseScan` 표시
 
 ### 구체화 (materialization)
+세미 조인에 사용된 서브쿼리를 통째로 구체화해서 쿼리를 최적화
+
+- 구체화는 내부 임시 테이블을 만드는 것을 의미
+
+실행계획의 select_type 컬럼에 `MATERIALIZED` 표시
 
 ### 중복 제거 (duplicated weed-out)
+```mysql
+# Expected
+select * from employees e
+where e.emp_no in (select s.emp_no from salaries s where s.salary > 150000);
+
+# Actual
+select e.*
+from employees e, salaries s
+where e.emp_no = s.emp_no and s.salary > 150000
+group by e.emp_no;
+```
+
+세미 조인 서브쿼리를 일반적인 Inner Join 쿼리로 바꿔서 실행하고 마지막에 중복된 레코드를 제거하는 방법으로 처리
+
+- 원본 쿼리를 INNER JOIN + GROUP BY 형태로 변경
+
+실행계획의 extra 칼럼에 `Start temporary`, `End temporary` 표시
+
+- start와 end 구간이 최적화 처리 과정
+
+<br/>
 
 ### 컨디션 팬아웃 (condition_fanout_filter)
+MySQL 옵티마이저는 여러 테이블이 조인되는 경우 가능하다면 일치하는 레코드 건수가 적은 순서대로 조인을 실행
+
+- 조인을 실행할 때 테이블의 순서는 쿼리의 성능에 매우 큰 영향을 미침
+- `filtered` : 필터링되고 남은 레코드의 비율을 의미
+  - filtered = 12(%) 이란 얘기는 100건의 rows 중에 12 건(=100 * 0.12)만 남고 나머지 88 건은 MySQL 엔진에 의해 필터링 되었다는 것을 의미
+
+옵티마이저는 condition_fanout_filter 최적화 기능을 활성화하여 보다 정교한 계산을 할 수 있음
+
+- WHERE 조건절에 사용된 칼럼에 인덱스가 있는 경우
+- WHERE 조건절에 사용된 칼럼에 히스토그램이 존재하는 경우
 
 ### 파생 테이블 머지 (derived_merge)
+MySQL 5.7버전부터는 파생 테이블(Derived table, FROM 절에 사용된 서브쿼리)로 만들어지는 서브쿼리를 외부 쿼리와 병합해서 서브쿼리 부분을 제거하는 최적화 도입
+
+- 예전에는 FROM 절에 사용된 서브쿼리는 먼저 실행해서 그 결과를 임시 테이블로 만든 다음 외부 쿼리 부분을 처리
+- 예전 버전의 MySQL 서버에서 메모리로 생성되는 임시 테이블은 MEMORY 스토리지 엔진 사용, 디스크에 임시 생성은 MyISAM 스토리지 엔진 사용
+  - MEMORY 엔진은 가변 길이 컬럼을 지원하지 않아서 메모리 과다 사용하는 문제, MyISAM은 트랜잭션 미지원 문제
+- 8.0부터는 메모리용 임시 테이블에 TempTable 스토리지 엔진, 디스크 임시 생성은 InnoDB 사용
 
 ### 인비저블 인덱스 (use_invisible_indexes)
+```mysql
+ALTER TABLE ... ALTER INDEX ... [ VISIBLE | INVISIBILE ]
+```
+
+MySQL 8.0 버전부터는 인덱스의 가용 상태를 제어할 수 있는 기능 추가
+
+- 인덱스를 삭제하지 않고, 해당 인덱스를 사용하지 못하게 제어할 수 있음
 
 ### 스킵 스캔 (skip_scan)
+인덱스의 핵심은 값이 정렬돼 있다는 것이며, 이로 인해 인덱스를 구성하는 컬럼의 순서가 매우 중요
+
+(A, B, C)로 구성된 인덱스가 있을 때 B와 C 칼럼에 대한 조건을 가지고 있다면 인덱스를 활용할 수 없음
+
+인덱스 스킵 스캔은 제한적이긴 하지만 인덱스의 이러한 제약을 해소하는 최적화 기법
+
+8.0 버전부터 도입, 인덱스의 선행 컬럼이 조건절에 사용되지 않더라도 후행 컬럼의 조건만으로도 인덱스를 이용한 쿼리 성능 개선 가능
 
 ### 해시 조인 (hash_join)
+해시 조인은 네스티드 루프 조인에 비해 첫 번째 레코드를 찾는 데에 시간이 더 걸리지만 최종 레코드를 찾는데까지는 시간이 많이 걸리지 않음
+
+- 해시 조인 쿼리는 Beset Throughput에 적합
+- 네스티드 루프 조인은 Best Response Time에 적합
+
+일반적인 웹 서비스는 온라인 트랜잭션 서비스이기 때문에 throughput도 중요하지만 response time이 더 중요
+
+- 조인 조건의 컬럼이 인덱스가 없거나 조인 대상 테이블 중 일부 레코드 건수가 매우 적은 경우에 한해 해시 조인 알고리즘 사용
+
+해시 조인은 빌드 단계와 프로브 단계로 나누어 처리
+
+- 빌드 단계 : 조인 대상 테이블 중에서 레코드 건수가 적은 테이블을 골라서 해시 테이블을 생성하는 작업 수행
+- 프로브 단계 : 나머지 테이블의 레코드를 읽어서 해시 테이블의 일치 레코드를 찾는 과정
 
 ### 인덱스 정렬 선호 (prefer_ordering_index)
+MySQL 옵티마이저는 ORDER BY 또는 GROUP BY를 인덱스를 사용해 처리 가능한 경우 쿼리의 실행 계획에서 이 인덱스의 가중치를 높이 설정해서 실행
+
+- 이 가중치를 부여하지 않게 하기위해 prefer_ordering_index 옵션 활용
 
 ## 조인 최적화 알고리즘
+- Exhausitive Search
+- Greedy Search
+
 ### Exhaustive 알고리즘
+5.0 이전에 사용되던 조인 최적화 기법
+
+FROM 절에 명시된 모든 테이블의 조합에 대해 실행 계획의 비용을 계산해서 최적의 조합 1개를 찾는 방법
+
+- N! 개의 조합
 
 ### Greedy 검색 알고리즘
+5.0부터 도입된 조인 최적화 기법
+
+![image](https://user-images.githubusercontent.com/59307414/218309736-4f76fe59-b610-4b56-834d-cc592acf659e.png)
+
+1. 전체 N개의 테이블 중에서 optimizer_search_depth 시스템 설정 변수에 정의된 개수의 테이블로 가능한 조인 조합을 생성
+
+2. 1번에서 생성된 조인 조합 중에서 최소 비용의 실행 계획 하나를 선정
+
+3. 2번에서 선정된 실행 계획의 첫 테이블을 부분 실행 계획의 첫 번째 테이블로 선정
+
+4. 전체 N-1개의 테이블 중에서 optimizer_search_depth 시스템 설정 변수에 정의된 개수의 테이블로 가능한 조인 조합을 생성
+
+5. 4번에서 생성된 조인 조합들을 하나씩 3번에서 생성된 부분 실행 계획에 대입해 실행 비용을 계산
+
+6. 5번의 비용 계산 결과 최적의 실행 계획에서 두 번째 테이블을 3번에서 새성된 부분 실행 계획의 두 번째 테이블로 선정
+
+7. 남은 테이블이 모두 없어질 때까지 4~6번까지의 과정을 반복 
+
+8. 최종적으로 부분 실행 계획이 테이블의 조인 순서로 결정됨
+
+조인 최적화를 위한 시스템 변수
+
+- optimizer_search_depth : Greedy 검색 알고리즘과 Exhaustive 검색 알고리즘 중에서 어떤 알고리즘을 사용할지 결정
+
+- optimizer_prune_level : Heuristic 검색이 작동하는 방식 제어
 
 # 쿼리 힌트
+MySQL 서버는 우리가 서비스하는 비즈니스를 100% 이해하지 못함
 
+따라서 옵티마이저에게 쿼리의 실행 계획을 어떻게 수립해야 할지 알려줄 수 있는 방법 필요
+
+- 인덱스 힌트
+- 옵티마이저 힌트
 
 ## 인덱스 힌트
+STRAIGHT_JOIN, USE_INDEX 등의 인덱스 힌트는 MySQL 서버에 옵티마이저 힌트가 도입되기 전에 사용되던 기능
+
+SQL 문법에 맞게 사용해야 하기 때문에 사용하는 경우 ANSI-SQL 표준 문법을 준수하지 못함
+
+따라서 가능하면 인덱스 힌트보다는 옵티마이저 힌트를 사용할 것을 권장
+
+인덱스 힌트는 SELECT 명령과 UPDATE 명령에서만 사용 가능
+
 ### STRAIGHT_JOIN
+```mysql
+-- origin
+select *
+from t1, t2, t3
+where ...
+
+-- case1
+select straight_join *
+from t1, t2, t3
+where ...
+
+-- case2
+select /*! straight_join */ *
+from t1, t2, t3
+where ...
+```
+
+SELECT, UPDATE, DELETE 쿼리에서 여러 개의 테이블이 조인되는 경우 **조인 순서를 고정**하는 역할
+
+STRAIGHT_JOIN 힌트와 비슷한 역할을 하는 옵티마이저 힌트로는 아래의 힌트들이 존재
+- JOIN_FIXED_ORDER
+- JOIN_ORDER
+- JOIN_PREFIX
+- JOIN_SUFFIX
 
 ### USE INDEX / FORCE INDEX / IGNORE INDEX
+```mysql
+select * from employees where emp_no=10001;
+select * from employees force index (primary) where emp_no=10001;
+select * from employees use index (primary) where emp_no=10001;
+
+select * from employees ignore index (primary) where emp_no=10001;
+select * from employees force index (ix_firstname) where emp_no=10001;
+```
+
+인덱스 힌트는 사용하려는 인덱스를 가지는 테이블 뒤에 힌트를 명시
+
+3~4개 이상의 칼럼을 포함하는 비슷한 인덱스가 여러 개 존재하는 경우에 가끔 옵티마이저가 실수 할 수 있음
+
+이런 경우 강제로 특정 인덱스를 사용하도록 힌트를 추가
+
+- USE INDEX : 옵티마이저에게 특정 테이블의 인덱스를 사용하도록 권장하는 힌트
+- FORCE INDEX : USE INDEX 와 비슷하지만 더 강하게 사용하도록 요구하는 힌트 (거의 사용하지 않음)
+- IGNORE INDEX : 반대로 특정 인덱스를 사용하지 못하게 하는 힌트
+
+인덱스 용도 명시 : 특정 용도로 사용할 수 있게 제한한다.
+- USE INDEX FOR JOIN : JOIN 키워드는 JOIN과 레코드 검색까지 포함
+- USE INDEX FOR ORDER BY : 명시된 인덱스를 ORDER BY 용도로만 사용할 수 있게 제한
+- USE INDEX FOR GROUP BY : 명시된 인덱스를 GROUP BY 용도로만 사용할 수 있게 제한
 
 ### SQL_CALC_FOUND_ROWS
+```mysql
+select SQL_CALC_FOUND_ROWS * from employees limit 5;
+select found_rows() as total_record_count;
+```
+
+MySQL의 LIMIT을 사용하는 경우, 조건을 만족하는 레코드가 LIMIT에 명시된 수보다 더 많더라도 명시된 수만큼 만족하는 레코드를 찾으면 즉시 검색을 멈춤
+
+하지만 SQL_CALC_FOUND_ROWS 힌트가 포함된 쿼리는 LIMIT을 만족하는 수만큼 레코드를 찾았더라도 끝까지 검색을 수행
 
 ## 옵티마이저 힌트
+옵티마이저 힌트는 영향 범위에 따라 다음 4개 그룹으로 나눌 수 있음
 
-### 힌트 종류
-
-
-|힌트 이름|설명|영향 범위|
-|---|---|---|
-|||
+- 인덱스 : 특정 인덱스의 이름을 사용할 수 있는 옵티마이저 힌트
+- 테이블 : 특정 테이블의 이름을 사용할 수 있는 옵티마이저 힌트
+- 쿼리 블록 : 특정 쿼리 블록에 사용할 수 있는 옵티마이저 힌트, 힌트가 명시된 쿼리 블록에 대해서만 영향을 끼침
+- 글로벌 : 전체 쿼리에 대해서 영향을 미치는 힌트
 
 ### MAX_EXECUTION_TIME
+쿼리의 최대 실행 시간을 설정하는 힌트
+
+지정된 시간을 초과하면 에러 발생 (ERROR 3024)
+
+영향범위 : 글로벌
 
 ### SET_VAR
+쿼리 실행을 위한 시스템 변수 제어
+
+실행 계획을 바꾸는 용도뿐만 아니라 조인 버퍼나 정렬용 버퍼의 크기를 일시적으로 증가시켜 대용량 처리 쿼리의 성능을 향상시키는 용도로도 사용할 수 있음
+
+영향범위 : 글로벌
 
 ### SEMIJOIN, NO_SEMIJOIN
+서브쿼리의 세미 조인 최적화 전략 제어
+
+- ~~table pull-out~~ : 디폴트로 적용되기 때문에 없음
+- duplicate weed-out : `SEMIJOIN(DUPSWEEDOUT)`
+- first match : `SEMIJOIN(FIRSTMATCH)`
+- loose scan : `SEMIJOIN(LOOSESCAN)`
+- materialization : `SEMIJOIN(METERIALIZATION)`
+
+영향범위 : 쿼리 블록
 
 ### SUBQUERY
+세미 조인 최적화가 사용되지 못할 때 사용하는 방법
+
+- IN-to-EXIIST : `SUBQUERY(INTOEXISTS)`
+- Materialization : `SUBQUERY(MATERIALIZATION)`
+
+영향범위 : 쿼리블록
 
 ### BNL, NO_BNL, HASHJOIN, NO_HASHJOIN
+블록 네스티드 루프, 해시 조인 알고리즘 적용
+
+영향 범위 : 쿼리 블록, 테이블
 
 ### JOIN_FIXED_ORDER, JOIN_ORDER, JOIN_PREFIX, JOIN_SUFFIX
+조인 순서를 결정하는 힌트
+
+- JOIN_FIXED_ORDER : STRAIGHT_JOIN 힌트와 동일
+- JOIN_ORDER : FROM 절에 사용된 테이블의 순서가 아니라 힌트에 명시된 테이블의 순서대로 조인을 수행
+- JOIN_PREFIX : 드라이빙 테이블만 강제
+- JOIN_SUFFIX : 드리븐 테이블(가장 마지막에 조인돼야 할 테이블들)만 강제
+
+영향 범위 : 쿼리 블록
 
 ### MERGE, NO_MERGE
+FROM 절에 사용된 서브쿼리(혹은 뷰)를 내부 임시 테이블로 생성할지 외부 쿼리와 병합하는 최적화를 수행할지를 정하는 힌트
+
+영향 범위 : 테이블
 
 ### INDEX_MERGE, NO_INDEX_MERGE
+인덱스 병합 실행 계획 사용 여부 제어
+
+영향 범위 : 테이블, 인덱스
 
 ### NO_ICP
+ICP(Index condition pushdown) 사용 여부 제어
+
+보통은 항상 성능 향상에 도움되기 때문에 별도로 제어하지 않음
+
+영향 범위 : 테이블, 인덱스
 
 ### SKIP_SCAN, NO_SKIP_SCAN
+인덱스 스킵 스캔 사용 여부 제어
+
+영향 범위 : 테이블, 인덱스
 
 ### INDEX, NO_INDEX
+인덱스 힌트를 대체하는 용도로 제공
