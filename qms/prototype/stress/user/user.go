@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type User struct {
@@ -47,25 +48,25 @@ func (u *User) GetWaitingTicket(roomID string) error {
 
 	b, err := json.Marshal(req)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 	buf := bytes.NewBuffer(b)
 	resp, err := http.Post("http://localhost:1323/waiting", "application/json", buf)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 
 	u.WaitingTicket = string(data)
-	fmt.Println("waiting ticket:", u.WaitingTicket)
+	// fmt.Println("waiting ticket:", u.WaitingTicket)
 	return nil
 }
 
@@ -79,35 +80,35 @@ func (u *User) Polling() (bool, error) {
 
 	b, err := json.Marshal(req)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return false, err
 	}
 	buf := bytes.NewBuffer(b)
 	resp, err := http.Post("http://localhost:1323/entrance", "application/json", buf)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return false, err
 	}
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return false, err
 	}
 
 	re := string(data)
 	if re == "Bad Request" {
-		log.Println("Bad Request")
+		// log.Println("Bad Request")
 		return false, nil
 	}
 
 	if re == "not yet" {
-		log.Println("not yet")
+		// log.Println("not yet")
 		return false, nil
 	}
 
-	log.Println("entrance ticket:", re)
+	// log.Println("entrance ticket:", re)
 	u.EntranceTicket = re
 	return true, nil
 }
@@ -115,23 +116,23 @@ func (u *User) Polling() (bool, error) {
 func (u *User) Login() error {
 	resp, err := http.Get("http://localhost:1324/enter?token=" + u.EntranceTicket)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 
 	result := string(data)
 	if result != "ok" {
-		log.Println("login failed")
+		// log.Println("login failed")
 	}
 
-	log.Println("login success")
+	// log.Println("login success")
 	u.Success = true
 	return nil
 }
@@ -139,23 +140,54 @@ func (u *User) Login() error {
 func (u *User) Logout() error {
 	resp, err := http.Get("http://localhost:1324/exit?token=" + u.EntranceTicket)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		// log.Fatalln(err)
 		return err
 	}
 
 	result := string(data)
 	if result != "ok" {
-		log.Println("logout failed")
+		// log.Println("logout failed")
 	}
 
-	log.Println("logout success")
-	u.Success = true
+	// log.Println("logout success")
 	return nil
+}
+
+func (u *User) Start(roomID string) bool {
+	_ = u.GetWaitingTicket(roomID)
+
+	time.Sleep(1 * time.Second)
+
+	for {
+		ok, _ := u.Polling()
+		if ok {
+			break
+		}
+		time.Sleep(300 * time.Millisecond)
+	}
+
+	u.Login()
+	if !u.Success {
+		log.Println(u.ID, "login fail")
+		return false
+	}
+
+	log.Println(u.ID, "login success")
+	time.Sleep(1 * time.Second)
+
+	u.Logout()
+
+	if !u.Success {
+		log.Println(u.ID, "fail")
+		return false
+	}
+
+	return true
 }

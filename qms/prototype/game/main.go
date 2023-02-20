@@ -17,7 +17,7 @@ import (
 const (
 	sig   = "entrance"
 	sep   = "-"
-	limit = 100
+	limit = 10
 )
 
 type Rooms struct {

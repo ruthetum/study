@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-redsync/redsync/v4"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mitchellh/mapstructure"
@@ -20,6 +22,7 @@ import (
 var (
 	redisClient *redis.Client
 	ctx         context.Context
+	rs          *redsync.Redsync
 )
 
 const (
@@ -27,6 +30,8 @@ const (
 	waitingField  = "waiting"
 	entranceField = "entrance"
 	threshold     = 10
+
+	mutexPrefix = "entrance-mutex:"
 )
 
 func main() {
@@ -36,6 +41,9 @@ func main() {
 		DB:       0,  // use default DB
 	})
 	ctx = context.Background()
+
+	pool := goredis.NewPool(redisClient)
+	rs = redsync.New(pool)
 
 	// Echo instance
 	e := echo.New()
@@ -67,24 +75,33 @@ func getWaitingTicket(c echo.Context) error {
 	}
 
 	// 대기번호 조회 및 값 증가
-	// Lock
 	waitingNumber, err := redisClient.HIncrBy(ctx, queueKey+req.RoomID, waitingField, 1).Result()
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
+
+	mutex := rs.NewMutex(mutexPrefix + req.RoomID)
+	if err := mutex.Lock(); err != nil {
+		log.Fatalln("Lock err", err)
+	}
+	defer func() {
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			log.Fatalln("Unlock err", err)
+		}
+	}()
+
 	// 대기번호, 진입번호가 없는 경우 초기화
 	if waitingNumber == 1 {
-		_, err := redisClient.HIncrBy(ctx, queueKey+req.RoomID, entranceField, 2).Result()
+		_, err := redisClient.HIncrBy(ctx, queueKey+req.RoomID, entranceField, 1).Result()
 		if err != nil {
 			return c.String(http.StatusBadRequest, "Bad Request")
 		}
 	}
-	// Unlock
 
 	// 발급한 대기번호와 진입번호의 차이가 큰 경우 알림(로그)
 	entranceNumber, err := redisClient.HGet(ctx, queueKey+req.RoomID, entranceField).Int64()
 	if err != nil && waitingNumber-entranceNumber > threshold {
-		log.Fatalln(fmt.Sprintf("room %s is congestion. waiting number: %d, entrance number: %d", req.RoomID, waitingNumber, entranceNumber))
+		log.Println(fmt.Sprintf("room %s is congestion. waiting number: %d, entrance number: %d", req.RoomID, waitingNumber, entranceNumber))
 	}
 
 	// 대기표 발급
@@ -108,16 +125,24 @@ func getEntranceTicket(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
+	mutex := rs.NewMutex(mutexPrefix + token.RoomID)
+	if err := mutex.Lock(); err != nil {
+		log.Fatalln("Lock err", err)
+	}
+	defer func() {
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			log.Fatalln("Unlock err", err)
+		}
+	}()
+
 	// 진입 번호 조회
-	// Lock
 	entranceNumber, err := redisClient.HGet(ctx, queueKey+token.RoomID, entranceField).Int64()
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
-	// UnLock
 
 	// 대기번호와 진입번호 비교 후 아직 진입 시기가 아닌 경우 대기자 수 출력
-	if entranceNumber <= token.Sequence {
+	if entranceNumber < token.Sequence {
 		log.Println(fmt.Sprintf("not yet, waiting for %d", token.Sequence-entranceNumber+1))
 		return c.String(http.StatusBadRequest, "not yet")
 	}
@@ -140,7 +165,16 @@ func feedback(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	// Lock
+	mutex := rs.NewMutex(mutexPrefix + req.RoomID)
+	if err := mutex.Lock(); err != nil {
+		log.Fatalln("Lock err", err)
+	}
+	defer func() {
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			log.Fatalln("Unlock err", err)
+		}
+	}()
+
 	entranceNumber, err := redisClient.HGet(ctx, queueKey+req.RoomID, entranceField).Int64()
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
@@ -161,8 +195,6 @@ func feedback(c echo.Context) error {
 			return c.String(http.StatusBadRequest, "Bad Request")
 		}
 	}
-
-	// Unlock
 
 	return c.String(http.StatusOK, "ok")
 }

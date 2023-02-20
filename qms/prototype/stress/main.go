@@ -1,31 +1,33 @@
 package main
 
 import (
+	"log"
+	"strconv"
 	"stress/user"
+	"sync"
+	"sync/atomic"
 	"time"
 )
 
 func main() {
-	u := user.New("1")
+	var success uint64 = 0
+	var wg sync.WaitGroup
 
-	_ = u.GetWaitingTicket("room1")
-
-	time.Sleep(1 * time.Second)
-
-	ok, _ := u.Polling()
-	if !ok {
-		// 반복
-		return
+	t := time.Now()
+	for i := 1; i <= 100; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			u := user.New(strconv.Itoa(id))
+			if u.Start("room1") {
+				atomic.AddUint64(&success, 1)
+			}
+		}(i)
 	}
+	wg.Wait()
+	log.Println("success=", atomic.LoadUint64(&success), "time=", time.Since(t))
 
-	time.Sleep(1 * time.Second)
+	//u := user.New(strconv.Itoa(1))
+	//u.Start("room1")
 
-	err := u.Login()
-	if err != nil {
-		return
-	}
-
-	time.Sleep(1 * time.Second)
-
-	_ = u.Logout()
 }
