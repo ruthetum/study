@@ -49,7 +49,7 @@ func main() {
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	// Routes
@@ -80,19 +80,19 @@ func getWaitingTicket(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	mutex := rs.NewMutex(mutexPrefix + req.RoomID)
-	if err := mutex.Lock(); err != nil {
-		log.Fatalln("Lock err", err)
-	}
-	defer func() {
-		if ok, err := mutex.Unlock(); !ok || err != nil {
-			log.Fatalln("Unlock err", err)
-		}
-	}()
+	//mutex := rs.NewMutex(mutexPrefix + req.RoomID)
+	//if err := mutex.Lock(); err != nil {
+	//	log.Fatalln("Lock err", err)
+	//}
+	//defer func() {
+	//	if ok, err := mutex.Unlock(); !ok || err != nil {
+	//		log.Fatalln("Unlock err", err)
+	//	}
+	//}()
 
 	// 대기번호, 진입번호가 없는 경우 초기화
 	if waitingNumber == 1 {
-		_, err := redisClient.HIncrBy(ctx, queueKey+req.RoomID, entranceField, 1).Result()
+		_, err := redisClient.HIncrBy(ctx, queueKey+req.RoomID, entranceField, 10).Result()
 		if err != nil {
 			return c.String(http.StatusBadRequest, "Bad Request")
 		}
@@ -143,7 +143,7 @@ func getEntranceTicket(c echo.Context) error {
 
 	// 대기번호와 진입번호 비교 후 아직 진입 시기가 아닌 경우 대기자 수 출력
 	if entranceNumber < token.Sequence {
-		log.Println(fmt.Sprintf("not yet, waiting for %d", token.Sequence-entranceNumber+1))
+		//log.Println(fmt.Sprintf("not yet, userID=%s, seq=%d, waiting for %d", token.UserID, token.Sequence, token.Sequence-entranceNumber+1))
 		return c.String(http.StatusBadRequest, "not yet")
 	}
 
@@ -165,15 +165,15 @@ func feedback(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	mutex := rs.NewMutex(mutexPrefix + req.RoomID)
-	if err := mutex.Lock(); err != nil {
-		log.Fatalln("Lock err", err)
-	}
-	defer func() {
-		if ok, err := mutex.Unlock(); !ok || err != nil {
-			log.Fatalln("Unlock err", err)
-		}
-	}()
+	//mutex := rs.NewMutex(mutexPrefix + req.RoomID)
+	//if err := mutex.Lock(); err != nil {
+	//	log.Fatalln("Lock err", err)
+	//}
+	//defer func() {
+	//	if ok, err := mutex.Unlock(); !ok || err != nil {
+	//		log.Fatalln("Unlock err", err)
+	//	}
+	//}()
 
 	entranceNumber, err := redisClient.HGet(ctx, queueKey+req.RoomID, entranceField).Int64()
 	if err != nil {

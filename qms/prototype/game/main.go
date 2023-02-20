@@ -44,6 +44,7 @@ func main() {
 	// Routes
 	e.GET("/enter", enter)
 	e.GET("/exit", exit)
+	e.GET("/monitor", monitor)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1324"))
@@ -100,8 +101,8 @@ func connect(ticket string) bool {
 	log.Println(fmt.Sprintf("room %s, remain %d", roomID, rooms.Connection[roomID]))
 
 	// Amount 피드백
-	amount := sequence + limit - int64(rooms.Connection[roomID])
-	go feedback(roomID, amount, 0)
+	// amount := sequence + limit - int64(rooms.Connection[roomID])
+	// go feedback(roomID, amount, 0)
 	return true
 }
 
@@ -157,4 +158,11 @@ func feedback(roomID string, amount, increment int64) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func monitor(c echo.Context) error {
+	rooms.RLock()
+	defer rooms.RUnlock()
+
+	return c.JSON(http.StatusOK, rooms.Connection)
 }

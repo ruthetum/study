@@ -3,6 +3,7 @@ package user
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -154,6 +155,7 @@ func (u *User) Logout() error {
 	result := string(data)
 	if result != "ok" {
 		// log.Println("logout failed")
+		return errors.New("logout failed")
 	}
 
 	// log.Println("logout success")
@@ -179,15 +181,20 @@ func (u *User) Start(roomID string) bool {
 		return false
 	}
 
-	log.Println(u.ID, "login success")
+	//log.Println(u.ID, "login success")
 	time.Sleep(1 * time.Second)
 
-	u.Logout()
+	err := u.Logout()
+	if err != nil {
+		log.Println(u.ID, "logout fail")
+		return false
+	}
 
 	if !u.Success {
 		log.Println(u.ID, "fail")
 		return false
 	}
 
+	log.Println(u.ID, "success")
 	return true
 }
