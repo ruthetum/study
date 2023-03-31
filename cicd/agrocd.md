@@ -39,3 +39,6 @@
 
 - ArgoCD는 Project 내부에 Role을 생성하고 권한을 부여
 - Account level의 token을 발급해서 사용할 수도 있음
+
+## Example
+- https://github.com/wilump-labs/argo-in-actions
