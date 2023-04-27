@@ -18,7 +18,7 @@
 - https://github.com/netty/netty
 - [자바 네트워크 소녀 Netty](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9788968482243&orderClick=LAG&Kc=)
 - SpringBoot + Netty TCP 소켓 서버 : https://i-hope9.github.io/2020/12/14/SpringBoot-Netty-2-SocketServer.html
-- 
+- **a tour of netty** 👍🏻: https://medium.com/geekculture/a-tour-of-netty-5020ecee5494
 
 ---
 
