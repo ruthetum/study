@@ -44,7 +44,7 @@
     - nGrinder
 
 ## 준비
-- [EC2에 Zookeeper, Kafka 설치 및 실행](../usage-install-ec2.md)
+- [EC2에 Zookeeper, Kafka 설치 및 실행](../installation/usage-install-ec2.md)
 
     ![image](https://user-images.githubusercontent.com/59307414/155881543-dd325967-2e17-4447-a7cb-36880588bdc7.png)
 
