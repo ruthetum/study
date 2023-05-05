@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sample
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /s1
+          pathType: Prefix
+          backend:
+            service:
+              name: sample-1
+              port:
+                number: 4001
+        - path: /s2
+          pathType: Prefix
+          backend:
+            service:
+              name: sample-2
+              port:
+                number: 4002

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample
+  labels:
+    app: sample
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample
+  template:
+    metadata:
+      labels:
+        app: sample
+        tier: app
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 4001
+          protocol: TCP
+        - containerPort: 4002
+          protocol: TCP
