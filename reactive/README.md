@@ -50,3 +50,9 @@
 - IO-bound blocking: thread가 대부분의 시간을 대기(= 오랜 시간 대기한다)
   - 파일 읽기/쓰기, network 요청 처리, 요청 전달 등
   - IO-bound non blocking을 통해 성능 개선 가능
+
+## CompletableFuture
+- java 8에서 처음 도입
+- 비동기 프로그래밍 지원
+- Lambda, Method reference 등 java 8의 새로운 기능 지원
+- 자세한 설명은 [여기](./completable-future)
