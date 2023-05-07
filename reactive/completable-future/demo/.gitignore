@@ -35,11 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### Video Resoucres ###
-/src/main/resources/videos/**
-
-### Custom ###
-vcs.xml
-.DS_Store
-/db/docker-images/mongo/mongodb
