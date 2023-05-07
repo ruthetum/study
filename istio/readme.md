@@ -359,6 +359,58 @@ spec:
             - containerPort: 80
 ```
 
+## 트래픽 라우팅
+### istio 기본 리소스
+#### Gateway
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: sample-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default ingress gateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+```
+- 프로토콜 및 Gateway 포트 설정
+- 요청 받고자 하는 hosts 등록 가능
+- TLS 관련 옵션 추가 기능
+- 실행하고자하는 워크로드 proxy에 설정도 가능
+- protocol selection: https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/
+
+#### VirtualService
+https://istio.io/latest/docs/reference/config/networking/virtual-service/
+```yaml
+# sample-virtual-service.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: sample-virtual-service
+spec:
+  hosts:
+    - "test.wilump.dev"
+  gateways:
+    - sample-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /sample
+      route:
+        - destination:
+            host: sample-service
+            port:
+              number: 80
+```
+- kubernetes가 L4 역할까지 못 함. VirtualService를 통해 L7 layer의 고차원 로드밸런싱을 지원 (e.g. path 별 라우팅)
+- `spec.hosts`에 처리할 트래픽 hosts 등록
+- 목적지에 대한 정책을 포함
+
 ## Related
 - [모놀리틱, 마이크로서비스의 장단점과 서비스 메쉬의 등장](./overview/msa.md)
 - [DevOps와 SRE 개념](./overview/devops.md)
