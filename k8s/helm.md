@@ -49,3 +49,5 @@ $ helm template . > app.yaml
 - https://tech.osci.kr/2019/11/13/helm-chart%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-kubernetes%EB%B0%B0%ED%8F%AC-%EA%B4%80%EB%A6%AC/
 - https://kycfeel.github.io/2019/04/15/helm%EC%9C%BC%EB%A1%9C-%EC%86%90%EC%89%BD%EA%B2%8C-Kubernetes%EC%97%90-%EC%95%A0%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0/
 - https://daeunnniii.tistory.com/170
+- https://gruuuuu.github.io/cloud/l-helm-basic/
+- https://velog.io/@lee20h/Helm-Chart%EC%99%80-Template%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
