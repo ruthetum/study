@@ -32,7 +32,7 @@ $ helm create sample-helm
 └── values.yaml
 ```
 
-ref. https://github.com/wilump-labs/argo-in-actions/tree/main/sample-helm-1
+ref. [sample-1](./sample-1)
 
 ### 파일 출력
 ```shell
