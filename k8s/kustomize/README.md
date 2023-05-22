@@ -20,6 +20,8 @@ kubernetes manifest 파일을 관리하기 위해 만들어진 오픈소스 도�
 - kustomize는 변경본(patch, overlay)을 만들어서 사용
   - kustomize는 원본 YAML 파일을 유지하기 때문에 바로 apply가 가능
 
+ref. [Helm vs Kustomize: 어떻게 배포할 것인가?](https://wookiist.dev/159)
+
 ## kustomization.yaml
 Kustomize가 사용하는 YAML manifest 파일
 
