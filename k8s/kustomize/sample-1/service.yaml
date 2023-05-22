@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kustomize-sample-1
+  labels:
+    app: kustomize-sample-1
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 80
+  selector:
+    app: kustomize-sample-1
