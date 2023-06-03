@@ -97,3 +97,30 @@
 |logs|컨테이너의 로그를 봅니다.|
 |exec|컨테이너에 명령어를 전달합니다. 컨테이너에 접근할 때 주로 사용합니다.|
 |config|kubectl 설정을 관리합니다.|
+
+
+### HPA
+
+> https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale/#%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%A0%95%EC%9D%98-%EB%A9%94%ED%8A%B8%EB%A6%AD%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%98%EB%8A%94-%EC%8A%A4%EC%BC%80%EC%9D%BC%EB%A7%81
+
+**사용자 정의 메트릭을 이용하는 스케일링**
+
+기능 상태: Kubernetes v1.23 [stable]
+
+(이전에는 autoscaling/v2beta2 API 버전이 이 기능을 베타 기능으로 제공했었다.)
+
+**autoscaling/v2beta2** API 버전을 사용하는 경우, (쿠버네티스 또는 어느 쿠버네티스 구성 요소에도 포함되어 있지 않은) 커스텀 메트릭을 기반으로 스케일링을 수행하도록 HorizontalPodAutoscaler를 구성할 수 있다. 이 경우 HorizontalPodAutoscaler 컨트롤러가 이러한 커스텀 메트릭을 쿠버네티스 API로부터 조회한다.
+
+요구 사항에 대한 정보는 메트릭 API를 위한 지원을 참조한다.
+
+**복수의 메트릭을 이용하는 스케일링**
+
+기능 상태: Kubernetes v1.23 [stable]
+
+(이전에는 autoscaling/v2beta2 API 버전이 이 기능을 베타 기능으로 제공했었다.)
+
+**autoscaling/v2** API 버전을 사용하는 경우, HorizontalPodAutoscaler는 스케일링에 사용할 복수의 메트릭을 설정할 수 있다. 이 경우 HorizontalPodAutoscaler 컨트롤러가 각 메트릭을 확인하고 해당 단일 메트릭에 대한 새로운 스케일링 크기를 제안한다. HorizontalPodAutoscaler는 새롭게 제안된 스케일링 크기 중 가장 큰 값을 선택하여 워크로드 사이즈를 조정한다(이 값이 이전에 설정한 '총 최대값(overall maximum)'보다는 크지 않을 때에만).
+
+ref. 
+- https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale/
+- https://saramin.github.io/2022-05-17-kubernetes-autoscaling/
