@@ -56,3 +56,14 @@
 - 비동기 프로그래밍 지원
 - Lambda, Method reference 등 java 8의 새로운 기능 지원
 - 자세한 설명은 [여기](./completable-future)
+
+## Reactive manifesto
+- reactive system 의 software architecture에 대한 선언문
+- 4가지 핵심 가치 제시
+  - Responsive(응답성): system이 항상 응답 가능해야 함
+  - Resilient(탄력성, 복원력): system이 장애에 대해 견고해야 함
+  - Elastic(유연성): system이 부하에 대해 탄력적으로 대처해야 함
+  - Message-driven(메시지 기반): system이 비동기 메시지 전달을 통해 느슨하게 결합되어야 함
+- cf. 
+  - en: https://www.reactivemanifesto.org/
+  - ko: https://www.reactivemanifesto.org/ko
