@@ -64,6 +64,56 @@
   - Resilient(탄력성, 복원력): system이 장애에 대해 견고해야 함
   - Elastic(유연성): system이 부하에 대해 탄력적으로 대처해야 함
   - Message-driven(메시지 기반): system이 비동기 메시지 전달을 통해 느슨하게 결합되어야 함
-- cf. 
+- reference 
   - en: https://www.reactivemanifesto.org/
   - ko: https://www.reactivemanifesto.org/ko
+
+## Reactive programming
+- 비동기 데이터 stream을 사용하는 패러다임
+- 모든 것이 이벤트로 구성되고 이벤트를 통해 전파
+  - event-driven
+  - 데이터의 전달, 에러, 완료를 모두 이벤트로 취급
+- Reactive streams 활용(reactive streams를 구현한 라이브러리 활용)
+  - reactive programming을 위한 표준
+  - back pressure를 지원
+  - publisher, subscriber, subscription로 구성
+  - reference: https://www.reactive-streams.org/
+
+### Reactive streams 구조
+
+![img.png](https://www.appsdeveloperblog.com/wp-content/uploads/2021/05/sequence-diagram.png?ezimgfmt=ng:webp/ngcb2)
+
+ref. https://www.appsdeveloperblog.com/reactive-streams-in-java/
+
+#### Publisher
+```java
+@FunctionalInterface
+public static interface Publisher<T> {
+    public void subscribe(Subscriber<? super T> subscriber);
+}
+```
+- subscribe 함수를 제공해서 publisher에 다수의 subscriber를 등록할 수 있음
+- subscription을 포함하고 subscriber가 추가되면 subscription 제공
+
+#### Subscriber
+```java
+public interface Subscriber<T> {
+    public void onSubscribe(Subscription subscription);
+    public void onNext(T item);
+    public void onError(Throwable throwable);
+    public void onComplete();
+}
+```
+- subscribe하는 시점에 publisher로부터 subscription을 받을 수 있는 인자 제공
+- onNext, onError, onComplete 함수를 통해 publisher로부터 전달받은 데이터 혹은 이벤트를 처리
+- onNext는 여러 번, onError와 onComplete는 한 번만 호출
+
+#### Subscription
+```java
+public interface Subscription {
+    public void request(long n);
+    public void cancel();
+}
+```
+- request(long n): back pressure를 조절
+- cancel(): publisher가 onNext를 통해서 값을 전달하는 것을 취소
