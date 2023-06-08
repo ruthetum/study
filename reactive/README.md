@@ -79,13 +79,13 @@
   - publisher, subscriber, subscription로 구성
   - reference: https://www.reactive-streams.org/
 
-### Reactive streams 구조
+## Reactive streams 구조
 
 ![img.png](https://www.appsdeveloperblog.com/wp-content/uploads/2021/05/sequence-diagram.png?ezimgfmt=ng:webp/ngcb2)
 
 ref. https://www.appsdeveloperblog.com/reactive-streams-in-java/
 
-#### Publisher
+### Publisher
 ```java
 @FunctionalInterface
 public static interface Publisher<T> {
@@ -95,7 +95,7 @@ public static interface Publisher<T> {
 - subscribe 함수를 제공해서 publisher에 다수의 subscriber를 등록할 수 있음
 - subscription을 포함하고 subscriber가 추가되면 subscription 제공
 
-#### Subscriber
+### Subscriber
 ```java
 public interface Subscriber<T> {
     public void onSubscribe(Subscription subscription);
@@ -108,7 +108,7 @@ public interface Subscriber<T> {
 - onNext, onError, onComplete 함수를 통해 publisher로부터 전달받은 데이터 혹은 이벤트를 처리
 - onNext는 여러 번, onError와 onComplete는 한 번만 호출
 
-#### Subscription
+### Subscription
 ```java
 public interface Subscription {
     public void request(long n);
@@ -117,3 +117,14 @@ public interface Subscription {
 ```
 - request(long n): back pressure를 조절
 - cancel(): publisher가 onNext를 통해서 값을 전달하는 것을 취소
+
+## Reactive streams 구현 라이브러리
+- Project reactor
+- RxJava
+- Mutiny
+
+### Project reactor
+> [project reactor - pivotal](https://projectreactor.io/)
+- Spring reactor에서 사용 (webflux 기반)
+- Mono, Flux publisher 제공
+
