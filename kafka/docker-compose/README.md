@@ -7,23 +7,32 @@ docker-compose -f docker-compose-single.yml up -d
 ```
 
 ### Multi broker
-zookeeper 3개 인스턴스, kafka broker 3개
+kafka broker 3개, zookeeper 1개
 
 ```shell
 docker-compose -f docker-compose-multi.yml up -d
 ```
 
 ## Test
+### Kafka CLI
+```shell
+brew install kafka
+```
+
 ### Create topic
 ```shell
-docker-compose exec kafka kafka-topics --create --topic wilump-topic --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+# single broker
+docker exec -t kafka /usr/bin/kafka-topics --bootstrap-server kafka:9092 --create --topic wilump-topic
 ```
 
 ### Describe topic
 ```shell
-docker-compose exec kafka kafka-topics --describe --topic wilump-topic --bootstrap-server kafka:9092 
+# single broker
+docker exec -t kafka /usr/bin/kafka-topics --bootstrap-server kafka:9092 --describe --topic wilump-topic
 ```
 
 ## Reference
 - https://devocean.sk.com/blog/techBoardDetail.do?ID=164007
 - https://devocean.sk.com/blog/techBoardDetail.do?ID=164016
+- https://sup2is.github.io/2020/06/10/apache-kafka-02.html
+- https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-mac-with-homebrew/

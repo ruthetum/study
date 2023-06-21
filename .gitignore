@@ -43,3 +43,4 @@ out/
 vcs.xml
 .DS_Store
 /db/docker-images/mongo/mongodb
+**/volumes/
