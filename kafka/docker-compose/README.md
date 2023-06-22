@@ -13,6 +13,11 @@ kafka broker 3개, zookeeper 1개
 docker-compose -f docker-compose-multi.yml up -d
 ```
 
+### Kafka-ui
+```shell
+docker-compose -f docker-compose-kafka-ui.yml up -d
+```
+
 ## Test
 ### Kafka CLI
 ```shell

@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "18989:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:9092,kafka-2:9093,kafka-3:9094
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-1:22181
+    volumes:
+      - ./volumes/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
