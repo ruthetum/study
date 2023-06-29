@@ -132,3 +132,4 @@ Jaeger Console은 트레이스를 보고 분석하는 데 사용할 수 있는 �
 - https://opencensus.io/
 - https://blog.naver.com/alice_k106/221832024817
 - https://m.blog.naver.com/freepsw/221945686208
+- Jaeger 개발 배경: https://www.uber.com/en-GB/blog/distributed-tracing/
