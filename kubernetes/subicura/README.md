@@ -26,7 +26,7 @@ minikube start --driver=hyperkit
 minikube start --driver=docker
 # driver 에러가 발생한다면 virtual box를 사용
 minikube start --driver=virtualbox
-# 특정 k8s 버전 실행
+# 특정 kubernetes 버전 실행
 minikube start --kubernetes-version=v1.23.1
 
 # 상태확인
@@ -56,7 +56,7 @@ docker compose up -d
 ### k8s 배포
 #### 적용
 ```shell
-kubectl apply -f wordpress-k8s.yaml
+kubectl apply -f wordpress-kubernetes.yaml
 ```
 
 #### 확인
@@ -66,7 +66,7 @@ kubectl get all
 
 #### 삭제
 ```shell
-kubectl delete -f wordpress-k8s.yml
+kubectl delete -f wordpress-kubernetes.yml
 ```
 
 ## 기본 명령어
@@ -701,7 +701,7 @@ spec:
 ## Ingress
 ```yaml
 # v1.ingress.yaml
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.kubernetes.io/v1
 kind: Ingress
 metadata:
   name: echo-v1
@@ -720,7 +720,7 @@ spec:
 ```
 ```yaml
 # v2.ingress.yaml
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.kubernetes.io/v1
 kind: Ingress
 metadata:
   name: echo-v2
