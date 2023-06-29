@@ -19,12 +19,27 @@ services:
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-1:22181
 ```
 
+ref. https://github.com/provectus/kafka-ui/blob/master/documentation/compose/DOCKER_COMPOSE.md
+
+### helm
+
+ref. https://docs.kafka-ui.provectus.io/configuration/helm-charts/quick-start
+
 ## Redpanda console (Kowl)
-TBD
+### compose
+
+ref. https://docs.redpanda.com/docs/reference/docker-compose/
+
+### helm
+
+ref. https://docs.redpanda.com/docs/deploy/deployment-option/self-hosted/kubernetes/eks-guide/
 
 ## References
 - comparison: https://towardsdatascience.com/overview-of-ui-tools-for-monitoring-and-management-of-apache-kafka-clusters-8c383f897e80
 - https://github.com/provectus/kafka-ui
+  - https://docs.kafka-ui.provectus.io/overview/readme
 - https://github.com/redpanda-data/console
+  - https://docs.redpanda.com/docs/manage/console/
+  - https://docs.redpanda.com/docs/deploy/deployment-option/self-hosted/kubernetes/eks-guide/
 - https://devocean.sk.com/blog/techBoardDetail.do?ID=163980
 - https://github.com/redpanda-data/console/blob/master/docs/local/docker-compose.yaml
