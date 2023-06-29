@@ -39,6 +39,9 @@ ref. [sample-1](./sample-1)
 $ helm template . > app.yaml
 ```
 
+### 명령어
+![command](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fdv59BR%2Fbtq1ov6BZP1%2F00zUE828PtxOm0tiBlefO1%2Fimg.png)
+
 ## Reference
 - https://helm.sh/
 - https://helm.sh/docs/topics/charts/
