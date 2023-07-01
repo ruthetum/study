@@ -1,5 +1,8 @@
 package com.example.orderservice.product;
 
+import org.springframework.stereotype.Service;
+
+@Service
 class ProductService {
     private final ProductPort productPort;
 
