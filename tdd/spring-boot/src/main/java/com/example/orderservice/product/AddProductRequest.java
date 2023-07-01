@@ -1,7 +1,10 @@
 package com.example.orderservice.product;
 
+import lombok.Getter;
 import org.springframework.util.Assert;
 
+
+@Getter
 class AddProductRequest {
     private final String name;
     private final int price;
