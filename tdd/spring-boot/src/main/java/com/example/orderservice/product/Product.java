@@ -27,4 +27,10 @@ class Product {
         this.price = price;
         this.discountPolicy = discountPolicy;
     }
+
+    public void update(String name, int price, DiscountPolicy discountPolicy) {
+        this.name = name;
+        this.price = price;
+        this.discountPolicy = discountPolicy;
+    }
 }

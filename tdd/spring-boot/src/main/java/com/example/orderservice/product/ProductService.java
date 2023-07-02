@@ -16,4 +16,16 @@ class ProductService {
         final Product product = new Product(request.name(), request.price(), request.discountPolicy());
         productPort.save(product);
     }
+
+    public GetProductResponse getProduct(Long productId) {
+        Product product = productPort.getProduct(productId);
+        return GetProductResponse.fromEntity(product);
+    }
+
+    @Transactional
+    public void updateProduct(Long productId, UpdateProductRequest request) {
+        Product product = productPort.getProduct(productId);
+        product.update(request.getName(), request.getPrice(), request.getDiscountPolicy());
+        productPort.save(product);
+    }
 }
