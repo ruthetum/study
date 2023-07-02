@@ -1,6 +1,6 @@
-package com.example.orderservice.order;
+package com.example.orderservice.order.domain;
 
-import com.example.orderservice.product.Product;
+import com.example.orderservice.product.domain.Product;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

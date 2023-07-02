@@ -1,5 +1,6 @@
-package com.example.orderservice.product;
+package com.example.orderservice.product.interfaces.dto;
 
+import com.example.orderservice.product.DiscountPolicy;
 import lombok.Getter;
 import org.springframework.util.Assert;
 

@@ -1,5 +1,8 @@
 package com.example.orderservice.product;
 
+import com.example.orderservice.product.domain.DiscountPolicy;
+import com.example.orderservice.product.interfaces.dto.AddProductRequest;
+import com.example.orderservice.product.interfaces.dto.UpdateProductRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

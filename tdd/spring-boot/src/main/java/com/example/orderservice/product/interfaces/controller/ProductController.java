@@ -1,5 +1,9 @@
-package com.example.orderservice.product;
+package com.example.orderservice.product.interfaces.controller;
 
+import com.example.orderservice.product.application.service.ProductService;
+import com.example.orderservice.product.interfaces.dto.AddProductRequest;
+import com.example.orderservice.product.interfaces.dto.GetProductResponse;
+import com.example.orderservice.product.interfaces.dto.UpdateProductRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,7 @@
-package com.example.orderservice.product;
+package com.example.orderservice.product.interfaces.dto;
 
+import com.example.orderservice.product.DiscountPolicy;
+import com.example.orderservice.product.domain.Product;
 import lombok.Getter;
 
 @Getter

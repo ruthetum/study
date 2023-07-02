@@ -1,5 +1,9 @@
 package com.example.orderservice.product;
 
+import com.example.orderservice.product.application.service.ProductService;
+import com.example.orderservice.product.domain.DiscountPolicy;
+import com.example.orderservice.product.interfaces.dto.GetProductResponse;
+import com.example.orderservice.product.interfaces.dto.UpdateProductRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

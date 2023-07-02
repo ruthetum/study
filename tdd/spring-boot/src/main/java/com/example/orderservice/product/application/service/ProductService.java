@@ -1,5 +1,10 @@
-package com.example.orderservice.product;
+package com.example.orderservice.product.application.service;
 
+import com.example.orderservice.product.domain.Product;
+import com.example.orderservice.product.ProductPort;
+import com.example.orderservice.product.interfaces.dto.AddProductRequest;
+import com.example.orderservice.product.interfaces.dto.GetProductResponse;
+import com.example.orderservice.product.interfaces.dto.UpdateProductRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

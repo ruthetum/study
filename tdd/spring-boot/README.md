@@ -12,11 +12,5 @@ erDiagram
         int product_id
         int quantity
     }
-    PAYMENT {
-        int id
-        int order_id
-        string card_number
-    }
-    ORDER ||--o{ PRODUCT : has
-    ORDER ||--o| PAYMENT : contains
+    PRODUCT ||--o| ORDER : has
 ```

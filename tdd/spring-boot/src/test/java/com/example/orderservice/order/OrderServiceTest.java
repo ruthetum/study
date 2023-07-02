@@ -1,6 +1,10 @@
 package com.example.orderservice.order;
 
-import com.example.orderservice.product.ProductService;
+import com.example.orderservice.order.application.service.OrderService;
+import com.example.orderservice.order.domain.Order;
+import com.example.orderservice.order.domain.OrderRepository;
+import com.example.orderservice.order.interfaces.dto.CreateOrderRequest;
+import com.example.orderservice.product.application.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
