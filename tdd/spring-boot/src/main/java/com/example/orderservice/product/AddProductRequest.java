@@ -5,7 +5,7 @@ import org.springframework.util.Assert;
 
 
 @Getter
-class AddProductRequest {
+public class AddProductRequest {
     private final String name;
     private final int price;
     private final DiscountPolicy discountPolicy;
@@ -17,17 +17,5 @@ class AddProductRequest {
         this.name = name;
         this.price = price;
         this.discountPolicy = discountPolicy;
-    }
-
-    public String name() {
-        return this.name;
-    }
-
-    public int price() {
-        return this.price;
-    }
-
-    public DiscountPolicy discountPolicy() {
-        return this.discountPolicy;
     }
 }

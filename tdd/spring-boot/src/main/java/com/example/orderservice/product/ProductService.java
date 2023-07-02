@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-class ProductService {
+public class ProductService {
     private final ProductPort productPort;
 
     ProductService(ProductPort productPort) {
@@ -13,7 +13,7 @@ class ProductService {
 
     @Transactional
     public void addProduct(AddProductRequest request) {
-        final Product product = new Product(request.name(), request.price(), request.discountPolicy());
+        final Product product = Product.create(request.getName(), request.getPrice(), request.getDiscountPolicy());
         productPort.save(product);
     }
 

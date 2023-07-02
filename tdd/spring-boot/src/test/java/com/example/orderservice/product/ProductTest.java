@@ -8,7 +8,7 @@ public class ProductTest {
 
     @Test
     void update() {
-        Product product = new Product("초코에몽", 1000, DiscountPolicy.NONE);
+        Product product = Product.create("초코에몽", 1000, DiscountPolicy.NONE);
 
         product.update("초코에몽L", 2000, DiscountPolicy.NONE);
 
