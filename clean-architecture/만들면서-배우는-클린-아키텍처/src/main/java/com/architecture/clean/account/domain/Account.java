@@ -36,7 +36,7 @@ public class Account {
             return false;
         }
 
-        Activity withdrawal = Activity.withId(this.id, this.id, targetAccountId, LocalDateTime.now(), money);
+        Activity withdrawal = Activity.withoutId(this.id, this.id, targetAccountId, LocalDateTime.now(), money);
         this.activityWindow.addActivity(withdrawal);
         return true;
     }
@@ -46,7 +46,7 @@ public class Account {
     }
 
     public boolean deposit(Money money, Long sourceAccountId) {
-        Activity deposit = Activity.withId(this.id, sourceAccountId, this.id, LocalDateTime.now(), money);
+        Activity deposit = Activity.withoutId(this.id, sourceAccountId, this.id, LocalDateTime.now(), money);
         this.activityWindow.addActivity(deposit);
         return true;
     }
