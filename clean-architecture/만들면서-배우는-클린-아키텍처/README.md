@@ -9,5 +9,66 @@
 
 1. [계층형 아키텍처의 문제는 무엇일까?](./contents/ch01-layer-architecture.md)
 
+## Structure
+```
+.
+├── main
+│   ├── java
+│   │   └── com
+│   │       └── architecture
+│   │           └── clean
+│   │               ├── CleanApplication.java
+│   │               ├── account
+│   │               │   ├── adapter
+│   │               │   │   ├── in
+│   │               │   │   │   └── web
+│   │               │   │   │       └── SendMoneyController.java
+│   │               │   │   └── out
+│   │               │   │       └── persistence
+│   │               │   │           ├── AccountJpaEntity.java
+│   │               │   │           ├── AccountMapper.java
+│   │               │   │           ├── AccountPersistenceAdapter.java
+│   │               │   │           ├── AccountRepository.java
+│   │               │   │           ├── ActivityJpaEntity.java
+│   │               │   │           └── ActivityRepository.java
+│   │               │   ├── application
+│   │               │   │   ├── port
+│   │               │   │   │   ├── in
+│   │               │   │   │   │   ├── GetAccountBalanceQuery.java
+│   │               │   │   │   │   ├── SendMoneyCommand.java
+│   │               │   │   │   │   └── SendMoneyUseCase.java
+│   │               │   │   │   └── out
+│   │               │   │   │       ├── AccountLock.java
+│   │               │   │   │       ├── LoadAccountPort.java
+│   │               │   │   │       └── UpdateAccountStatePort.java
+│   │               │   │   └── service
+│   │               │   │       ├── GetAccountBalanceService.java
+│   │               │   │       ├── MoneyTransferProperties.java
+│   │               │   │       ├── NoOpAccountLock.java
+│   │               │   │       ├── SendMoneyService.java
+│   │               │   │       └── ThresholdExceededException.java
+│   │               │   └── domain
+│   │               │       ├── Account.java
+│   │               │       ├── Activity.java
+│   │               │       ├── ActivityWindow.java
+│   │               │       └── Money.java
+│   │               ├── common
+│   │               │   └── SelfValidating.java
+│   │               └── config
+│   │                   ├── CleanArchitectureConfiguration.java
+│   │                   └── CleanArchitectureConfigurationProperties.java
+│   └── resources
+│       ├── application.yml
+│       ├── static
+│       └── templates
+└── test
+    └── java
+        └── com
+            └── architecture
+                └── clean
+                    └── CleanApplicationTests.java
+
+```
+
 ## Reference
 source code: https://github.com/wikibook/clean-architecture
