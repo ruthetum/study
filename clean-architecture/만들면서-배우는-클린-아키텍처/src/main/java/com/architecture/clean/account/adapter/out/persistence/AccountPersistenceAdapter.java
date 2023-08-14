@@ -1,6 +1,7 @@
 package com.architecture.clean.account.adapter.out.persistence;
 
 import com.architecture.clean.account.application.port.out.LoadAccountPort;
+import com.architecture.clean.account.application.port.out.UpdateAccountStatePort;
 import com.architecture.clean.account.domain.Account;
 import com.architecture.clean.account.domain.Activity;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,0 +1,2 @@
+clean:
+  transferThreshold: 10000
