@@ -8,6 +8,15 @@
 ## [Contents](./contents)
 
 1. [계층형 아키텍처의 문제는 무엇일까?](./contents/ch01-layer-architecture.md)
+2. [의존성 역전하기](./contents/ch02-ioc.md)
+3. [코드 구성하기](./contents/ch03-code.md)
+4. [유스케이스 구현하기](./contents/ch04-usecase.md)
+5. [웹 어뎁터 구현하기](./contents/ch05-web-adapter.md)
+6. [영속성 어뎁터 구현하기](./contents/ch06-persistence-adapter.md)
+7. [아키텍처 요소 테스트하기](./contents/ch07-architecture-test.md)
+8. [경계 간 매핑하기](./contents/ch08-mapper.md)
+9. 애플리케이션 조립하기
+10. 아키텍처 경계 강제하기
 
 ## Structure
 ```
@@ -66,8 +75,26 @@
         └── com
             └── architecture
                 └── clean
-                    └── CleanApplicationTests.java
-
+                    ├── CleanApplicationTests.java
+                    ├── account
+                    │   ├── adapter
+                    │   │   ├── in
+                    │   │   │   └── web
+                    │   │   │       └── SendMoneyControllerTest.java
+                    │   │   └── out
+                    │   │       └── persistence
+                    │   │           └── AccountPersistenceAdapterTest.java
+                    │   ├── application
+                    │   │   └── service
+                    │   │       └── SendMoneyServiceTest.java
+                    │   └── domain
+                    │       ├── AccountTest.java
+                    │       └── ActivityWindowTest.java
+                    ├── common
+                    │   ├── AccountTestData.java
+                    │   └── ActivityTestData.java
+                    └── system
+                        └── SendMoneySystemTest.java
 ```
 
 ## Reference

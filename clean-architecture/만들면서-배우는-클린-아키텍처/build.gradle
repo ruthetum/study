@@ -28,6 +28,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'com.tngtech.archunit:archunit:0.16.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

@@ -1,4 +1,4 @@
-# ch 05. 웹 어터 구현하기
+# ch 05. 웹 어뎁터 구현하기
 
 <img width="637" alt="스크린샷" src="https://github.com/ruthetum/study/assets/59307414/10c481c9-278d-4e46-9aed-7bc43ba549a2">
 
