@@ -58,6 +58,7 @@
   - [AOP](./spring/aop/)
   - [Spring Cache](./spring/cacheable/)
   - [Spring Cloud 맛보기](./spring/spring-cloud)
+  - [Spring Batch](./spring/spring-batch)
   - [MSA 환경에서 REST DOCS 적용하기](./spring/restdocs/mas-환경에서-rest-docs-적용하기.md)
 - [TDD](./tdd/README.md)
   - [Spring Boot TDD](./tdd/spring-boot)
