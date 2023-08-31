@@ -1,48 +1,64 @@
 # 📝 Study
-- 공부한 내용은 정리하기
-- 궁금한 내용은 실험하기
-- 기억할 내용은 [보관](https://github.com/ruthetum/study/wiki)하기
 
-## 💾 Theory
-### Kafka
-- [Kafka 개념 및 구조](./kafka/kafka-theory-architecture.md)
-- [이벤트 브로커 vs 메시지 브로커](./kafka/messaging-platform.md)
-
-### Netty
-- [Netty - 자바 네트워크 소녀 Netty 정리](./netty/java-network-girl-netty)
-
-### Redis
-- [Redis 야무지게 쓰기](./redis)
-- [Redis vs Memcached](./redis/compairson-redis-memcached.md)
-
-### Java
-- [Effective Java 정리](./effective-java)
-    - [Effective Java 스터디](https://github.com/Effective-Java-Camp/effective-java-3rd)
-
-### DB
-- [MySQL IN 절 안에 있는 순서대로 정렬하기](./db/query/mysql_in_%EC%A0%88_%EC%95%88%EC%97%90_%EC%9E%88%EB%8A%94_%EC%88%9C%EC%84%9C%EB%8C%80%EB%A1%9C_%EC%A0%95%EB%A0%AC%ED%95%98%EA%B8%B0.md)
-
-### Web Server
-- [Apache vs Nginx](./nginx/compairson-apache-nginx.md)
-
-### Spring
-- [AOP](./spring/aop/)
-- [Spring Cache with AOP](./spring/cacheable/)
-
-### MSA
-- [Saga 패턴](./saga/)
-
-## 🔬 Experiment
-- [Spring으로 이것저것](https://github.com/ruthetum/my-spring)
-
-- [DB 성능 비교 테스트 - MySQL vs MongoDB vs Redis](./db/db-comparison)
-
-- [Spring 캐시를 이용한 캐시 적용 성능 비교](./spring/cacheable/)
-
-- [HTTP vs MQ - Kafka 활용](./kafka/http-vs-mq)
-
-- [MSA에서 모든 비즈니스 규칙들을 실시간으로 일관성을 맞춰줘야 할까?](./kafka/%EB%B9%84%EC%A6%88%EB%8B%88%EC%8A%A4%EC%9D%BC%EA%B4%80%EC%84%B1%2B%EB%B9%84%EB%8F%99%EA%B8%B0%ED%86%B5%EC%8B%A0)
-
-- [Spring MVC vs WebFlux](./reactive/mvc%20vs%20webflux)
-
-- [다중 채팅 서버 만들기 with Redis](./redis/chatting-with-redis)
+## 💾 Contents
+- [WIP] Armeria
+- AWS
+  - [AWS KMS](./aws/kms.md)
+- [CI/CD](./cicd/readme.md)
+  - [AgroCD](./cicd/agrocd.md)
+  - [Github Actions](./cicd/github-actions.md)
+- clean-architecture
+  - [만들면서 배우는 클린 아키텍처](./clean-architecture/만들면서-배우는-클린-아키텍처)
+- [CQRS](./cqrs/README.md)
+- Database
+  - [MySQL / Mongo / Redis 성능 비교 w. Spring](./db/db-comparison)
+  - [MySQL / Mongo / Redis Docker compose 예시 소스](./db/docker-images)
+  - [Real MySQL](./db/real-mysql)
+  - [Isolation Level](./db/isolation-level)
+  - [MySQL IN 절 안에 있는 순서대로 정렬하기](./db/query/mysql_in_절_안에_있는_순서대로_정렬하기.md)
+- [디자인 패턴](./design-patterns/README.md)
+- Docker
+  - [Docker 기본 명령어](./docker/command.md)
+- [Effective Java](./effective-java/README.md)
+- ELK
+  - [ELK Overview](./elk/contents/overview.md)
+- [WIP] Fixture Monkey
+- gRPC
+  - [WIP] [gRPC Overview](./grpc/readme.md)
+- HTTP
+  - [Cache-Control](./http/cache-control.md)
+- **[WIP]** [istio](./istio/readme.md)
+- Jaeger
+  - [Jaeger Overview](./jaeger/README.md)
+  - [Jaeger in Action](https://github.com/wilump-labs/jaeger-in-action)
+- Jenkins
+  - [Jenkins Overview](./jenkins/README.md)
+- JS
+  - [Babel, Webpack, Polyfill](./js/readme.md#babel-webpack-polyfill)
+- **[WIP]** [Kafka](./kafka/readme.md)
+- **[WIP]** [Kubernetes](./kubernetes/readme.md)
+- [NATS](./nats/README.md)
+- [Netty](./netty/README.md)
+- Network
+  - [NAT](./network/NAT.md)
+- nginx
+  - [nginx vs apache](./nginx/compairson-apache-nginx.md)
+- nGrinder
+  - [nGrinder 기본 사용법](./ngrinder/usage.md)
+- [대기열 시스템](./qms/README.md)
+- [Reactive Programming](./reactive/README.md)
+  - [mvc vs webflux](./reactive/mvc-vs-webflux)
+  - [CompletableFuture](./reactive/completable-future)
+- Redis
+  - [Redis 야무지게 쓰기](./redis)
+  - [Redis vs Memcached](./redis/compairson-redis-memcached.md)
+  - [Redis Transaction](./redis/redis-transaction)
+- [Saga 패턴](./saga/readme.md)
+- Spring
+  - [AOP](./spring/aop/)
+  - [Spring Cache](./spring/cacheable/)
+  - [Spring Cloud 맛보기](./spring/spring-cloud)
+  - [MSA 환경에서 REST DOCS 적용하기](./spring/restdocs/mas-환경에서-rest-docs-적용하기.md)
+- [TDD](./tdd/README.md)
+  - [Spring Boot TDD](./tdd/spring-boot)
+  - [테스트 주도 개발 시작하기](./tdd/테스트-주도-개발-시작하기)

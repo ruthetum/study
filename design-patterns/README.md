@@ -1,10 +1,78 @@
 # Design Patterns
-```
-- Head First Design Patterns을 읽고 정리/실습한 내용입니다.
-- 추가적인 패턴별 설명은 아래 reference를 읽어주세요.
-```
+- 특정 문맥에서 공통적으로 발생하는 문제에 대해 쓰이는 재사용 가능한 해결책
+- 목적별로 일정한 패턴이 제시되어 있음
+- 완전한 정답이 되는 알고리즘과 달리 현재 상황에 맞춰 최적화된 패턴을 결정하여 사용하는 것이 좋음
+- 대표적으로 구체화된 디자인 패턴은 GoF(Gang of Four)에서 제시한 23개의 패턴이 있음
 
-## 목차
+## 디자인 패턴의 장점
+- 개발자 간의 원활한 협업이 가능
+- 소프트웨어의 구조를 파악하기 용이함
+- 재사용을 통해 개발 시간 단축
+- 설계 변경이 있을 경우 비교적 원활하게 조치가 가능
+
+## 디자인 패턴의 단점
+- 객체지향적 설계를 고려하여 진행해야 함
+- 초기 투자 비용이 많이 들어감
+
+## GoF 디자인 패턴
+### 목적에 따른 분류
+- <strong>생성 패턴, 구조 패턴, 행동 패턴</strong> 총 3가지로 구분됨
+- 각 패턴이 어떤 작업을 위해 생성되는 것인지에 따른 구분
+
+|생성 패턴|구조 패턴|행동 패턴|
+|---|---|---|
+|Abstract Factory<br><strong>Builder</strong><br>Factory Method<br>Prototype<br><strong>Singleton</strong>|<strong>Adapter</strong><br>Bridge<br>Composite<br>Decorator<br>Facade<br>Flyweight<br>Proxy|Chain of Responsibility<br>Command<br>Interpreter<br>Iterator<br>Mediator<br>Memento<br><strong>Observer</strong><br>State<br><strong>Stratergy</strong><br>Template Method<br>Visitor|
+
+### 생성 패턴
+- 생성 패턴은 객체의 생성과 관련된 패턴
+- 특정 객체가 생성되거나 변경되어도 프로그램 구조에 영향을 최소화할 수 있도록 유연성 제공
+
+|생성 패턴|의도|
+|---|---|
+|추상 팩토리(Abstract Factory)|구체적인 클래스를 지정하지 않고 인터페이스를 통해 연관되는 객체들을 보여줌|
+|빌더(Builder)|객체의 생성과 표현을 분리하여 객체를 생성|
+|팩토리 메서드(Factory Method)|객체 생성을 서브클래스로 분리하여 위임(캡슐화)|
+|프로토타입(Prototype)|원본 객체를 복사하여 객체를 생성(클론)|
+|싱글톤(Singleton)|한 클래스마다 인스턴스를 하나만 생성하여 어디서든 참조|
+
+### 구조 패턴
+- 구조 패턴은 프로그램 내 자료 구조나 인터페이스 구조 등 프로그램 구조를 설계하는데 사용되는 패턴
+- 클래스나 객체를 조합하여 더 큰 구조를 만들 수 있게 해줌
+
+|구조 패턴|의도|
+|---|---|
+|어댑터(Adapter)|클래스의 인터페이스를 어떤 클래스에서든 이용할 수 있도록 변환|
+|브리지(Bridge)|구현부에서 추상층을 분리하여 각자 독립적으로 변형하고 확장할 수 있도록 함|
+|컴포지트(Composite)|객체들의 관계를 트리 구조로 표현하는 방식으로 복합 객체와 단일 객체를 구분없이 다룸|
+|데코레이터(Decorator)|주어진 상황에 따라 객체에 다른 객체를 덧붙임|
+|파사드(Facade)|서브 시스템에 있는 인터페이스 집합에 대해 통합된 인터페이스 제공|
+|플라이웨이트(Flyweight)|크기가 작은 여러 개의 객체를 매번 생성하지 않고 최대한 공유하여 사용하도록 메모리 절약|
+|프록시(Proxy)|실제 기능을 수행하는 객체 대신 가상의 객체를 사용해 로직의 흐름을 제어|
+
+### 행동(행위 패턴)
+- 행동 패턴은 반복적으로 사용되는 객체들의 커뮤니케이션을 패턴화
+- 객체 사이에 알고리즘 또는 책임을 분배하는 방법에 대해 정의됨
+- 결합도를 최소화하는 것이 주 목적
+
+|행동 패턴|의도|
+|---|---|
+|책임 연쇄(Chain of Responsibility)|요청을 받는 객체를 연쇄적으로 묶어 요청을 처리하는 객체를 만날 때까지 객체 Chain을 따라 요청을 전달|
+|커맨드(Command)|요청을 객체의 형태로 캡슐화하여 재사용하거나 취소|
+|인터프리터(Interpreter)|특정 언어의 문법 표현을 정의|
+|반복자(Iterator)|컬렉션 구현 방법을 노출하지 않으면서 모든 항목에 접근할 수 있는 방법을 제공|
+|중재자(Mediator)|한 집합에 속해있는 객체들의 상호작용을 캡슐화하여 새로운 객체로 정의|
+|메멘토(Memento)|객체가 특정 상태로 다시 되돌아올 수 있도록 내부 상태를 실제화|
+|옵저버(Observer)|객체 상태가 변할 때 관련 객체들이 그 변화를 전달받아 자동으로 캐싱|
+|상태(State)|객체의 상태에 따라 동일한 동작을 다르게 처리|
+|전략(Stratergy)|동일 계열의 알고리즘군을 정의하고 캡슐화하여 상호 교환이 가능하게 함|
+|템플릿 메서드(Template Method)|상위 클래스는 알고리즘의 골격만을 작성하고 구체적인 처리를 서브 클래스로 위임|
+|방문자(Visitor)|객체의 원소에 대해 수행할 연산을 분리하여 별도의 클래스로 구성|
+
+---
+
+> - 아래 내용은 Head First Design Patterns을 읽고 정리/실습한 내용입니다.
+
+## 예제 코드
 | Chapter |                           Pattern                            | Description                                                                                    |                     Directory                      |   Classification   |
 |:-------:|:------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------|:--------------------------------------------------:|:------------------:|
 |    1    |                        전략(Stratergy)                         | 동일 계열의 알고리즘군을 정의하고 캡슐화하여 상호 교환이 가능하게 함                                                         |           [ch1-strategy](./ch1-strategy)           |     행동(행위) 패턴      |
@@ -22,31 +90,7 @@
 |   13    |                         실전에서의 디자인 패턴                         | - |          [ch13-patterns](./ch13-patterns)          | - |
 |   14    | 기타 패턴(브리지, 빌더, 역할 사슬, 플라이웨이트, 인터프리터, 미디에이터, 메멘토, 프로토타입, 비지터) | - |               [ch14-etc](./ch14-etc)               | - |
 
-
-## GoF 디자인 패턴
-#### 목적에 따른 분류
-- 생성 패턴, 구조 패턴, 행동 패턴 총 3가지로 구분됨
-- 각 패턴이 어떤 작업을 위해 생성되는 것인지에 따른 구분
-
-|생성 패턴|구조 패턴|행동 패턴|
-|---|---|---|
-|Abstract Factory<br>Builder<br>Factory Method<br>Prototype<br>Singleton|Adapter<br>Bridge<br>Composite<br>Decorator<br>Facade<br>Flyweight<br>Proxy|Chain of Responsibility<br>Command<br>Interpreter<br>Iterator<br>Mediator<br>Memento<br>Observer<br>State<br>Stratergy<br>Template Method<br>Visitor|
-
-#### 생성 패턴
-- 생성 패턴은 객체의 생성과 관련된 패턴
-- 특정 객체가 생성되거나 변경되어도 프로그램 구조에 영향을 최소화할 수 있도록 유연성 제공
-
-#### 구조 패턴
-- 구조 패턴은 프로그램 내 자료 구조나 인터페이스 구조 등 프로그램 구조를 설계하는데 사용되는 패턴
-- 클래스나 객체를 조합하여 더 큰 구조를 만들 수 있게 해줌
-
-#### 행동(행위 패턴)
-- 행동 패턴은 반복적으로 사용되는 객체들의 커뮤니케이션을 패턴화
-- 객체 사이에 알고리즘 또는 책임을 분배하는 방법에 대해 정의됨
-- 결합도를 최소화하는 것이 주 목적
-
 ## Reference
-- 디자인 패턴별 설명 : https://github.com/ruthetum/study/wiki/Design-Pattern
 - https://refactoring.guru/design-patterns
 - https://msyu1207.tistory.com/entry/1%EC%9E%A5-%ED%97%A4%EB%93%9C%ED%8D%BC%EC%8A%A4%ED%8A%B8-%EB%94%94%EC%9E%90%EC%9D%B8-%ED%8C%A8%ED%84%B4-%EC%A0%84%EB%9E%B5-%ED%8C%A8%ED%84%B4
   - 소스 코드 내에 담겨진 readme의 설명은 위의 블로그를 참고해서 정리됐습니다.
