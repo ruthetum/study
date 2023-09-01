@@ -116,3 +116,57 @@
 - latest: 설정하면 가장 높은(가장 최근에 넣은) 오프셋부터 읽기 시작
 - earliest: 설정하면 가장 낮은(가장 오래된) 오프셋부터 읽기 시작
 - none: 설정하면 컨슈머 그룹이 커밋한 기록이 있는지 찾아봄. 만약 커밋 기록이 없으면 오류를 반환하고, 커밋 기록이 있다면 기존 커밋 기록 이후 오프셋부터 읽기 시작
+
+## 리밸런스 리스너를 가진 컨슈머
+리밸런스 발생을 감지하기 위해 카프카 라이브러리는 ConsumerRebalanceListener 인터페이스를 지원
+
+ConsumerRebalanceListener 인터페이스로 구현된 클래스는 onPartitionAssigned() 메서드와 onPartitionRevoked() 메서드로 구성
+
+- onPartitionAssigned(): 리밸런스가 끝난 뒤에 파티션이 할당 완료되면 호출되는 메서드
+- onPartitionRevoked(): 리밸런스가 시작되기 직전에 호출되는 메서드. 마지막을 처리한 레코드를 기준으로 커밋을 하기 위해서는 리밸런스가 시작하기 직전에 커밋을 하면 되므로 onPartitionRevoked() 메서드에서 커밋을 구현하여 처리
+
+```java
+public class RebalanceListener implements ConsumerRebalanceListener {
+
+    ...
+    
+    @Override
+    public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+        // 리밸런스가 끝난 뒤에 파티션이 할당 완료되면 호출되는 메서드
+    }
+
+    @Override
+    public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+        // 리밸런스가 시작되기 직전에 호출되는 메서드
+        // 마지막을 처리한 레코드를 기준으로 커밋을 하기 위해서는 리밸런스가 시작하기 직전에 커밋을 하면 됨
+        // onPartitionsRevoked() 메서드에서 커밋을 구현하여 처리
+        consumer.commitSync(currentOffsets);
+    }
+}
+```
+
+## 파티션 할당 컨슈머 애플리케이션
+
+일반적으로 사용하기보다는 특별한 파티션에 할당해야 하는 경우 사용
+
+```java
+private final static int PARTITION_NUMBER  = 0;
+
+public static void main(String[] args) {
+
+        Properties configs = new Properties();
+        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(configs);
+        consumer.assign(Collections.singleton(new TopicPartition(TOPIC_NAME, PARTITION_NUMBER)));
+        while (true) {
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+            for (ConsumerRecord<String, String> record : records) {
+                logger.info("record:{}", record);
+            }
+        }
+}
+```
+
