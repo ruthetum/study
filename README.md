@@ -15,6 +15,7 @@
   - [MySQL / Mongo / Redis Docker compose 예시 소스](./db/docker-images)
   - [Real MySQL](./db/real-mysql)
   - [Isolation Level](./db/isolation-level)
+  - [Aurora MySQL Replication Lag](./db/aurora/replication-lag.md)
   - [MySQL IN 절 안에 있는 순서대로 정렬하기](./db/query/mysql_in_절_안에_있는_순서대로_정렬하기.md)
 - [디자인 패턴](./design-patterns/README.md)
 - Docker
