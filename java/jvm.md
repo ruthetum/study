@@ -37,8 +37,8 @@
 
 ```mermaid
 graph LR
-    A(1. Loading) --> B(2. Linking)
-    B --> C(3. Initializing)
+    A(Loading) --> B(Linking)
+    B --> C(Initializing)
 ```
 
 ### 1. Loading
